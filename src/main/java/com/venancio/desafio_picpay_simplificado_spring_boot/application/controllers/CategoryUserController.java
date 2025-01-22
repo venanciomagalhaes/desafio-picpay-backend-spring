@@ -45,7 +45,7 @@ public class CategoryUserController {
                 "User categories listed successfully!",
                 status
         )
-        .setPagination(paginatedCategoryUsers.getPageable())
+        .setPagination(paginatedCategoryUsers)
         .setData(categoryUsersDTOList)
         .build();
     }

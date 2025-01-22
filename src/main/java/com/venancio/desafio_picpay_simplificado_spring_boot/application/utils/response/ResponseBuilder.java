@@ -1,5 +1,6 @@
 package com.venancio.desafio_picpay_simplificado_spring_boot.application.utils.response;
 
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
@@ -78,6 +79,37 @@ public class ResponseBuilder {
         return this;
     }
 
+    private Map<String, Object> getSortDetails(Page<?> page) {
+        Map<String, Object> sortDetails = new HashMap<>();
+        sortDetails.put("sorted", page.getSort().isSorted());
+        sortDetails.put("empty", page.getSort().isEmpty());
+        sortDetails.put("unsorted", page.getSort().isUnsorted());
+        return sortDetails;
+    }
+
+    private Map<String, Object> generatePaginationDetails() {
+
+        Page<?> page = (Page<?>) this.pagination;
+        Map<String, Object> paginationDetails = new HashMap<>();
+        paginationDetails.put("last", page.isLast());
+        paginationDetails.put("totalPages", page.getTotalPages());
+        paginationDetails.put("totalElements", page.getTotalElements());
+        paginationDetails.put("size", page.getSize());
+        paginationDetails.put("page_number", page.getNumber());
+
+        Map<String, Object> sortDetails = new HashMap<>();
+        sortDetails.put("sorted", page.getSort().isSorted());
+        sortDetails.put("empty", page.getSort().isEmpty());
+        sortDetails.put("unsorted", page.getSort().isUnsorted());
+
+        paginationDetails.put("sort", sortDetails);
+        paginationDetails.put("first", page.isFirst());
+        paginationDetails.put("numberOfElements", page.getNumberOfElements());
+        paginationDetails.put("empty", page.isEmpty());
+
+        return paginationDetails;
+    }
+
     /**
      * Monta o corpo da resposta em um mapa estruturado.
      *
@@ -86,12 +118,17 @@ public class ResponseBuilder {
     private Map<String, Object> mountResponse() {
         Map<String, Object> response = new LinkedHashMap<>();
         response.put("message", this.message);
+
         if (this.validationErrors != null) {
             response.put("validation_errors", this.validationErrors);
         }
-        response.put("data", this.data == null ? new HashMap<String, String>() : this.data);
-        if (this.pagination != null) {
-            response.put("pagination", this.pagination);
+
+        if (this.data != null) {
+            response.put("data", this.data);
+        }
+
+        if (this.pagination != null && this.pagination instanceof Page) {
+                response.put("pagination", this.generatePaginationDetails());
         }
         return response;
     }
