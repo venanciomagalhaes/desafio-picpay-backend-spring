@@ -4,6 +4,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -37,11 +38,15 @@ public class ResponseBuilder {
     }
 
     private Map<String, Object>  mountResponse(){
-        Map<String, Object> response = new HashMap<>();
+        Map<String, Object> response = new LinkedHashMap<>();
         response.put("message", this.message);
-        response.put("validation_errors", this.validationErrors == null ? new HashMap<String, String>() : this.validationErrors);
+        if (this.validationErrors != null){
+            response.put("validation_errors",   this.validationErrors);
+        }
         response.put("data",this.data == null ? new HashMap<String, String>() : this.data);
-        response.put("pagination",this.pagination == null ? new HashMap<String, String>(): this.pagination);
+        if (this.pagination != null){
+            response.put("pagination", this.pagination);
+        }
         return response;
     }
 
