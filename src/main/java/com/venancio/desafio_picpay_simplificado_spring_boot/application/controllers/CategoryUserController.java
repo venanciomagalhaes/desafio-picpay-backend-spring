@@ -1,6 +1,5 @@
 package com.venancio.desafio_picpay_simplificado_spring_boot.application.controllers;
 
-import com.venancio.desafio_picpay_simplificado_spring_boot.application.dtos.category_user.CategoriesUsersListDTO;
 import com.venancio.desafio_picpay_simplificado_spring_boot.application.dtos.category_user.CategoryUserDTO;
 import com.venancio.desafio_picpay_simplificado_spring_boot.application.dtos.category_user.CategoryUserStoreDTO;
 import com.venancio.desafio_picpay_simplificado_spring_boot.application.dtos.category_user.CategoryUserUpdateDTO;
@@ -28,7 +27,7 @@ public class CategoryUserController  {
     @GetMapping
     public ResponseEntity<Map<String, Object>> index(Pageable pageable) {
         Page<CategoryUser> paginatedCategoryUsers = this.categoryUserService.index(pageable);
-        List<CategoriesUsersListDTO> categoryUsersDTOList = CategoriesUsersListDTO.toLisDTO(paginatedCategoryUsers.getContent());
+        List<CategoryUserDTO> categoryUsersDTOList = CategoryUserDTO.toLisDTO(paginatedCategoryUsers.getContent());
         HttpStatus status = categoryUsersDTOList.isEmpty() ? HttpStatus.NO_CONTENT : HttpStatus.OK;
         return new ResponseBuilder(
                 "User categories listed successfully!",
