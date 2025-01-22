@@ -17,13 +17,25 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * Controlador REST para gerenciar categorias de usuários.
+ * Este controlador fornece endpoints para listar, criar, atualizar, exibir e excluir categorias de usuários.
+ *
+ * @author Venâncio
+ */
 @RestController
 @RequestMapping("/api/v1/categories-users")
-public class CategoryUserController  {
+public class CategoryUserController {
 
     @Autowired
     private CategoryUserService categoryUserService;
 
+    /**
+     * Lista todas as categorias de usuários com paginação.
+     *
+     * @param pageable Objeto {@link Pageable} para controle de paginação.
+     * @return Uma resposta contendo as categorias de usuários paginadas ou status {@code NO_CONTENT} se vazio.
+     */
     @GetMapping
     public ResponseEntity<Map<String, Object>> index(Pageable pageable) {
         Page<CategoryUser> paginatedCategoryUsers = this.categoryUserService.index(pageable);
@@ -38,10 +50,16 @@ public class CategoryUserController  {
         .build();
     }
 
+    /**
+     * Exibe uma categoria de usuário pelo seu ID.
+     *
+     * @param id O ID da categoria de usuário.
+     * @return Uma resposta contendo os detalhes da categoria de usuário.
+     */
     @GetMapping("/{id}")
     public ResponseEntity<Map<String, Object>> show(@PathVariable(name = "id") Long id) {
-       CategoryUser categoryUser = this.categoryUserService.show(id);
-       CategoryUserDTO categoryUserDTO = CategoryUserDTO.toDTO(categoryUser);
+        CategoryUser categoryUser = this.categoryUserService.show(id);
+        CategoryUserDTO categoryUserDTO = CategoryUserDTO.toDTO(categoryUser);
         return new ResponseBuilder(
                 "User category show successfully!",
                 HttpStatus.OK
@@ -50,9 +68,14 @@ public class CategoryUserController  {
         .build();
     }
 
-
+    /**
+     * Cria uma nova categoria de usuário.
+     *
+     * @param categoryUserStoreDTO Objeto DTO contendo os dados para criação.
+     * @return Uma resposta contendo a categoria de usuário criada.
+     */
     @PostMapping
-    public ResponseEntity<Map<String, Object>> store(@RequestBody @Valid CategoryUserStoreDTO categoryUserStoreDTO){
+    public ResponseEntity<Map<String, Object>> store(@RequestBody @Valid CategoryUserStoreDTO categoryUserStoreDTO) {
         CategoryUser categoryUserListDTO = this.categoryUserService.store(categoryUserStoreDTO);
         CategoryUserDTO categoryUserDTO = CategoryUserDTO.toDTO(categoryUserListDTO);
         return new ResponseBuilder(
@@ -63,8 +86,17 @@ public class CategoryUserController  {
         .build();
     }
 
+    /**
+     * Atualiza uma categoria de usuário existente.
+     *
+     * @param id O ID da categoria de usuário.
+     * @param categoryUserUpdateDTO Objeto DTO contendo os dados para atualização.
+     * @return Uma resposta contendo a categoria de usuário atualizada.
+     */
     @PutMapping("/{id}")
-    public ResponseEntity<Map<String, Object>> update(@PathVariable(name = "id") Long id, @RequestBody @Valid CategoryUserUpdateDTO categoryUserUpdateDTO){
+    public ResponseEntity<Map<String, Object>> update(
+            @PathVariable(name = "id") Long id,
+            @RequestBody @Valid CategoryUserUpdateDTO categoryUserUpdateDTO) {
         CategoryUser categoryUserListDTO = this.categoryUserService.update(id, categoryUserUpdateDTO);
         CategoryUserDTO categoryUserDTO = CategoryUserDTO.toDTO(categoryUserListDTO);
         return new ResponseBuilder(
@@ -75,8 +107,14 @@ public class CategoryUserController  {
         .build();
     }
 
+    /**
+     * Exclui uma categoria de usuário existente.
+     *
+     * @param id O ID da categoria de usuário a ser excluída.
+     * @return Uma resposta confirmando a exclusão.
+     */
     @DeleteMapping("/{id}")
-    public ResponseEntity<Map<String, Object>> delete(@PathVariable(name = "id") Long id){
+    public ResponseEntity<Map<String, Object>> delete(@PathVariable(name = "id") Long id) {
         this.categoryUserService.delete(id);
         return new ResponseBuilder(
                 "User category deleted successfully!",
