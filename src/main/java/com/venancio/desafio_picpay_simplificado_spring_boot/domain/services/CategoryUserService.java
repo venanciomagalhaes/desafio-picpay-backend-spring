@@ -34,7 +34,9 @@ public class CategoryUserService {
     }
 
     public CategoryUser store(CategoryUserStoreDTO dto) {
-        CategoryUser categoryUserExist = this.categoryUserRepository.getCategoryUserByName(dto.name()).orElse(null);
+        CategoryUser categoryUserExist = this.categoryUserRepository.findByName(
+                CategoryUserNameEnum.valueOf(dto.name())
+        ).orElse(null);
         this.verifyCategoryUserAlreadyExists(categoryUserExist, dto);
         return this.categoryUserRepository.save(CategoryUserStoreDTO.toEntity(dto));
     }

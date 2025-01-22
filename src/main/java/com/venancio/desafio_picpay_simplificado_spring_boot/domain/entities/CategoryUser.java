@@ -2,15 +2,22 @@ package com.venancio.desafio_picpay_simplificado_spring_boot.domain.entities;
 
 import com.venancio.desafio_picpay_simplificado_spring_boot.domain.enums.CategoryUserNameEnum;
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.io.Serializable;
-import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
 
 @Entity
 @Table(name = "tb_category_users")
+@Setter
+@Getter
+@NoArgsConstructor
+@AllArgsConstructor
 public class CategoryUser implements Serializable {
 
     @Id
@@ -30,6 +37,10 @@ public class CategoryUser implements Serializable {
     @Column(nullable = false, name = "updated_at")
     private LocalDateTime updatedAt;
 
+    public CategoryUser(CategoryUserNameEnum name) {
+        this.name = name;
+    }
+
     @PrePersist
     public void prePersist() {
         LocalDateTime now = LocalDateTime.now();
@@ -41,57 +52,5 @@ public class CategoryUser implements Serializable {
     public void preUpdate() {
         this.updatedAt = LocalDateTime.now();
     }
-
-    public CategoryUser() {
-    }
-
-    public CategoryUser(Long id, CategoryUserNameEnum name, Set<User> users, LocalDateTime createdAt, LocalDateTime updatedAt) {
-        this.id = id;
-        this.name = name;
-        this.users = users;
-        this.createdAt = createdAt;
-        this.updatedAt = updatedAt;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public CategoryUserNameEnum getName() {
-        return name;
-    }
-
-    public void setName(CategoryUserNameEnum name) {
-        this.name = name;
-    }
-
-    public Set<User> getUsers() {
-        return users;
-    }
-
-    public void setUsers(Set<User> users) {
-        this.users = users;
-    }
-
-    public LocalDateTime getCreatedAt() {
-        return createdAt;
-    }
-
-    public void setCreatedAt(LocalDateTime createdAt) {
-        this.createdAt = createdAt;
-    }
-
-    public LocalDateTime getUpdatedAt() {
-        return updatedAt;
-    }
-
-    public void setUpdatedAt(LocalDateTime updatedAt) {
-        this.updatedAt = updatedAt;
-    }
-
 
 }
