@@ -7,23 +7,41 @@ import com.venancio.desafio_picpay_simplificado_spring_boot.domain.enums.Categor
 import com.venancio.desafio_picpay_simplificado_spring_boot.domain.exceptions.category_user.CategoryUserAlreadyExistsException;
 import com.venancio.desafio_picpay_simplificado_spring_boot.domain.exceptions.category_user.CategoryUserNotFoundException;
 import com.venancio.desafio_picpay_simplificado_spring_boot.domain.repositories.CategoryUserRepository;
-import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
+/**
+ * Serviço responsável pela lógica de negócios relacionada à entidade {@link CategoryUser}.
+ * Contém métodos para criar, atualizar, listar e excluir categorias de usuários.
+ *
+ * @author Venâncio
+ */
 @Service
 public class CategoryUserService {
 
     @Autowired
     private CategoryUserRepository categoryUserRepository;
 
+    /**
+     * Recupera uma página de todas as categorias de usuário.
+     *
+     * @param pageable Objeto que define a paginação das categorias de usuário.
+     * @return Uma página contendo as categorias de usuário.
+     */
     public Page<CategoryUser> index(Pageable pageable){
         return this.categoryUserRepository.findAll(pageable);
     }
 
+    /**
+     * Verifica se a categoria de usuário já existe.
+     *
+     * @param categoryUser A categoria de usuário a ser verificada.
+     * @param dto Objeto contendo os dados da categoria a ser validada.
+     * @throws CategoryUserAlreadyExistsException Se a categoria de usuário já existir.
+     */
     private void verifyCategoryUserAlreadyExists(CategoryUser categoryUser, CategoryUserStoreDTO dto) {
         if (categoryUser != null) {
             throw new CategoryUserAlreadyExistsException(
@@ -33,6 +51,13 @@ public class CategoryUserService {
         }
     }
 
+    /**
+     * Cria uma nova categoria de usuário.
+     *
+     * @param dto Objeto com os dados da categoria de usuário a ser criada.
+     * @return A categoria de usuário criada.
+     * @throws CategoryUserAlreadyExistsException Se a categoria de usuário já existir.
+     */
     public CategoryUser store(CategoryUserStoreDTO dto) {
         CategoryUser categoryUserExist = this.categoryUserRepository.findByName(
                 CategoryUserNameEnum.valueOf(dto.name())
@@ -41,6 +66,13 @@ public class CategoryUserService {
         return this.categoryUserRepository.save(CategoryUserStoreDTO.toEntity(dto));
     }
 
+    /**
+     * Verifica se a categoria de usuário não foi encontrada.
+     *
+     * @param categoryUser A categoria de usuário a ser verificada.
+     * @param id O id da categoria de usuário a ser verificada.
+     * @throws CategoryUserNotFoundException Se a categoria de usuário não for encontrada.
+     */
     private void verifyCategoryUserNotFound(CategoryUser categoryUser, Long id){
         if (categoryUser == null){
             throw new CategoryUserNotFoundException(
@@ -50,23 +82,43 @@ public class CategoryUserService {
         }
     }
 
+    /**
+     * Recupera uma categoria de usuário pelo ID.
+     *
+     * @param id O ID da categoria de usuário a ser recuperada.
+     * @return A categoria de usuário encontrada.
+     * @throws CategoryUserNotFoundException Se a categoria de usuário não for encontrada.
+     */
     public CategoryUser show(Long id) {
         CategoryUser categoryUser = this.categoryUserRepository.findById(id).orElse(null);
         this.verifyCategoryUserNotFound(categoryUser, id);
         return categoryUser;
     }
 
-    public CategoryUser update(Long id, @Valid CategoryUserUpdateDTO categoryUserUpdateDTO) {
+    /**
+     * Atualiza uma categoria de usuário existente.
+     *
+     * @param id O ID da categoria de usuário a ser atualizada.
+     * @param categoryUserUpdateDTO Objeto com os dados atualizados da categoria de usuário.
+     * @return A categoria de usuário atualizada.
+     * @throws CategoryUserNotFoundException Se a categoria de usuário não for encontrada.
+     */
+    public CategoryUser update(Long id, CategoryUserUpdateDTO categoryUserUpdateDTO) {
         CategoryUser categoryUser = this.categoryUserRepository.findById(id).orElse(null);
         this.verifyCategoryUserNotFound(categoryUser, id);
         categoryUser.setName(CategoryUserNameEnum.valueOf(categoryUserUpdateDTO.name()));
         return this.categoryUserRepository.save(categoryUser);
     }
 
+    /**
+     * Exclui uma categoria de usuário pelo ID.
+     *
+     * @param id O ID da categoria de usuário a ser excluída.
+     * @throws CategoryUserNotFoundException Se a categoria de usuário não for encontrada.
+     */
     public void delete(Long id) {
         CategoryUser categoryUser = this.categoryUserRepository.findById(id).orElse(null);
         this.verifyCategoryUserNotFound(categoryUser, id);
         this.categoryUserRepository.delete(categoryUser);
     }
-
 }

@@ -50,7 +50,7 @@ public class GlobalExceptionHandlerController {
     public ResponseEntity<Map<String, Object>> handleValidationException(MethodArgumentNotValidException ex) {
         List<Map<String, String>> errors = this.errorHandlerService.handleValidationException(ex);
         return new ResponseBuilder(
-                "Os campos enviados estão inválidos",
+                "The fields sent are invalid.",
                 HttpStatus.UNPROCESSABLE_ENTITY
         )
                 .setValidationErrors(errors)
