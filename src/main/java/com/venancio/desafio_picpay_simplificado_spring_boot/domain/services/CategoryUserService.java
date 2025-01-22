@@ -3,6 +3,7 @@ package com.venancio.desafio_picpay_simplificado_spring_boot.domain.services;
 import com.venancio.desafio_picpay_simplificado_spring_boot.application.dtos.category_user.CategoryUserStoreDTO;
 import com.venancio.desafio_picpay_simplificado_spring_boot.application.dtos.category_user.CategoryUserUpdateDTO;
 import com.venancio.desafio_picpay_simplificado_spring_boot.domain.entities.CategoryUser;
+import com.venancio.desafio_picpay_simplificado_spring_boot.domain.enums.CategoryUserNameEnum;
 import com.venancio.desafio_picpay_simplificado_spring_boot.domain.exceptions.category_user.CategoryUserAlreadyExistsException;
 import com.venancio.desafio_picpay_simplificado_spring_boot.domain.exceptions.category_user.CategoryUserNotFoundException;
 import com.venancio.desafio_picpay_simplificado_spring_boot.domain.repositories.CategoryUserRepository;
@@ -56,7 +57,7 @@ public class CategoryUserService {
     public CategoryUser update(Long id, @Valid CategoryUserUpdateDTO categoryUserUpdateDTO) {
         CategoryUser categoryUser = this.categoryUserRepository.findById(id).orElse(null);
         this.verifyCategoryUserNotFound(categoryUser, id);
-        categoryUser.setName(categoryUserUpdateDTO.name());
+        categoryUser.setName(CategoryUserNameEnum.valueOf(categoryUserUpdateDTO.name()));
         return this.categoryUserRepository.save(categoryUser);
     }
 

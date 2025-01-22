@@ -1,5 +1,6 @@
 package com.venancio.desafio_picpay_simplificado_spring_boot.domain.entities;
 
+import com.venancio.desafio_picpay_simplificado_spring_boot.domain.enums.CategoryUserNameEnum;
 import jakarta.persistence.*;
 
 import java.io.Serializable;
@@ -16,8 +17,9 @@ public class CategoryUser implements Serializable {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false, unique = true)
-    private String name;
+    private CategoryUserNameEnum name;
 
     @OneToMany(mappedBy = "category", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private Set<User> users = new HashSet<>();
@@ -43,7 +45,7 @@ public class CategoryUser implements Serializable {
     public CategoryUser() {
     }
 
-    public CategoryUser(Long id, String name, Set<User> users, LocalDateTime createdAt, LocalDateTime updatedAt) {
+    public CategoryUser(Long id, CategoryUserNameEnum name, Set<User> users, LocalDateTime createdAt, LocalDateTime updatedAt) {
         this.id = id;
         this.name = name;
         this.users = users;
@@ -59,11 +61,11 @@ public class CategoryUser implements Serializable {
         this.id = id;
     }
 
-    public String getName() {
+    public CategoryUserNameEnum getName() {
         return name;
     }
 
-    public void setName(String name) {
+    public void setName(CategoryUserNameEnum name) {
         this.name = name;
     }
 

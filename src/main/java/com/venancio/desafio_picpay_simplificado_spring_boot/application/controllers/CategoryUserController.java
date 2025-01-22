@@ -18,8 +18,6 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.Map;
 
-// index, show, store, update, delete
-
 @RestController
 @RequestMapping("/api/v1/categories-users")
 public class CategoryUserController  {
