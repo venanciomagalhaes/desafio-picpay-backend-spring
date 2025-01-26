@@ -1,4 +1,4 @@
-package com.venancio.desafio_picpay_simplificado_spring_boot.application.validations.category_exist;
+package com.venancio.desafio_picpay_simplificado_spring_boot.application.validations.user_category.user_category_exist;
 
 import com.venancio.desafio_picpay_simplificado_spring_boot.domain.entities.CategoryUser;
 import com.venancio.desafio_picpay_simplificado_spring_boot.domain.repositories.CategoryUserRepository;
@@ -16,7 +16,7 @@ public class UserCategoryExistValidator implements ConstraintValidator<UserCateg
     @Override
     public boolean isValid(Long value, ConstraintValidatorContext context) {
         try {
-            if (value == null) {
+            if (value == null){
                 return true;
             }
             Optional<CategoryUser> categoryUser = this.categoryUserRepository.findById(value);

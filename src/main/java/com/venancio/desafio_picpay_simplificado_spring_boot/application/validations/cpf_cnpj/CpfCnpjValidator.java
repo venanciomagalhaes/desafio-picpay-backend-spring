@@ -1,4 +1,4 @@
-package com.venancio.desafio_picpay_simplificado_spring_boot.application.validations.cpf_cnpj_validation;
+package com.venancio.desafio_picpay_simplificado_spring_boot.application.validations.cpf_cnpj;
 
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
@@ -13,7 +13,7 @@ public class CpfCnpjValidator implements ConstraintValidator<CpfCnpj, String> {
 
     @Override
     public boolean isValid(String value, ConstraintValidatorContext context) {
-        return value == null || value.isEmpty() || isCpf(value) || isCnpj(value);
+        return isCpf(value) || isCnpj(value);
     }
 
     /**
