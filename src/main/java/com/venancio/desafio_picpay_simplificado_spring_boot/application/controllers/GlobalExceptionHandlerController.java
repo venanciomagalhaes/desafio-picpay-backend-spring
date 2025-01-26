@@ -6,6 +6,7 @@ import com.venancio.desafio_picpay_simplificado_spring_boot.domain.services.Glob
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -25,6 +26,7 @@ import java.util.Map;
  * <ul>
  *     <li>{@link MethodArgumentNotValidException} - Falha na validação de dados de entrada.</li>
  *     <li>{@link BusinessException} - Erros relacionados à lógica de negócio da aplicação.</li>
+ *     <li>{@link HttpMessageNotReadableException} - Erros ao tentar ler ou desserializar o corpo da requisição.</li>
  *     <li>{@link Exception} - Exceções genéricas ou não tratadas explicitamente.</li>
  * </ul>
  *
@@ -75,6 +77,23 @@ public class GlobalExceptionHandlerController {
     }
 
     /**
+     * Captura exceções relacionadas ao corpo da requisição malformado.
+     *
+     * Este método é acionado quando ocorre um erro ao tentar ler ou desserializar o corpo da requisição,
+     * retornando uma resposta com status HTTP {@code 400 Bad Request}.
+     *
+     * @param ex A exceção {@code HttpMessageNotReadableException} que ocorre quando o corpo da requisição é malformado.
+     * @return A resposta {@code ResponseEntity} com a mensagem de erro e o status HTTP {@code 400}.
+     */
+    @ExceptionHandler(HttpMessageNotReadableException.class)
+    public ResponseEntity<Map<String, Object>> handleHttpMessageNotReadableException(HttpMessageNotReadableException ex) {
+        return new ResponseBuilder(
+                "The request body is malformed or cannot be deserialized correctly.",
+                HttpStatus.BAD_REQUEST
+        ).build();
+    }
+
+    /**
      * Captura exceções genéricas.
      *
      * Este método é acionado quando ocorre uma exceção não específica, garantindo que qualquer erro inesperado seja tratado.
@@ -86,7 +105,7 @@ public class GlobalExceptionHandlerController {
     @ExceptionHandler(Exception.class)
     public ResponseEntity<Map<String, Object>> handleGenericException(Exception ex) {
         return new ResponseBuilder(
-                "Internal server error",
+                ex.toString(),
                 HttpStatus.INTERNAL_SERVER_ERROR
         ).build();
     }
