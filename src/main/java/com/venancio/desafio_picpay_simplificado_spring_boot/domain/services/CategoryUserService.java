@@ -42,7 +42,10 @@ public class CategoryUserService {
      * @param dto Objeto contendo os dados da categoria a ser validada.
      * @throws CategoryUserAlreadyExistsException Se a categoria de usuário já existir.
      */
-    private void verifyCategoryUserAlreadyExists(CategoryUser categoryUser, CategoryUserStoreDTO dto) {
+    private void throwExceptionIfCategoryUserAlreadyExist(CategoryUserStoreDTO dto) {
+        CategoryUser categoryUser = this.categoryUserRepository.findByName(
+                CategoryUserNameEnum.valueOf(dto.name())
+        ).orElse(null);
         if (categoryUser != null) {
             throw new CategoryUserAlreadyExistsException(
                     "There is already a user category with the name " + dto.name(),
@@ -59,28 +62,10 @@ public class CategoryUserService {
      * @throws CategoryUserAlreadyExistsException Se a categoria de usuário já existir.
      */
     public CategoryUser store(CategoryUserStoreDTO dto) {
-        CategoryUser categoryUserExist = this.categoryUserRepository.findByName(
-                CategoryUserNameEnum.valueOf(dto.name())
-        ).orElse(null);
-        this.verifyCategoryUserAlreadyExists(categoryUserExist, dto);
+        this.throwExceptionIfCategoryUserAlreadyExist(dto);
         return this.categoryUserRepository.save(CategoryUserStoreDTO.toEntity(dto));
     }
 
-    /**
-     * Verifica se a categoria de usuário não foi encontrada.
-     *
-     * @param categoryUser A categoria de usuário a ser verificada.
-     * @param id O id da categoria de usuário a ser verificada.
-     * @throws CategoryUserNotFoundException Se a categoria de usuário não for encontrada.
-     */
-    private void verifyCategoryUserNotFound(CategoryUser categoryUser, Long id){
-        if (categoryUser == null){
-            throw new CategoryUserNotFoundException(
-                    "User category with the ID " + id + " was not found.",
-                    HttpStatus.NOT_FOUND
-            );
-        }
-    }
 
     /**
      * Recupera uma categoria de usuário pelo ID.
@@ -90,9 +75,9 @@ public class CategoryUserService {
      * @throws CategoryUserNotFoundException Se a categoria de usuário não for encontrada.
      */
     public CategoryUser show(Long id) {
-        CategoryUser categoryUser = this.categoryUserRepository.findById(id).orElse(null);
-        this.verifyCategoryUserNotFound(categoryUser, id);
-        return categoryUser;
+        return this.categoryUserRepository.findById(id)
+                .orElseThrow(() -> new CategoryUserNotFoundException("User category with the ID " + id + " was not found.",
+                        HttpStatus.NOT_FOUND));
     }
 
     /**
@@ -104,10 +89,14 @@ public class CategoryUserService {
      * @throws CategoryUserNotFoundException Se a categoria de usuário não for encontrada.
      */
     public CategoryUser update(Long id, CategoryUserUpdateDTO categoryUserUpdateDTO) {
-        CategoryUser categoryUser = this.categoryUserRepository.findById(id).orElse(null);
-        this.verifyCategoryUserNotFound(categoryUser, id);
-        categoryUser.setName(CategoryUserNameEnum.valueOf(categoryUserUpdateDTO.name()));
-        return this.categoryUserRepository.save(categoryUser);
+        CategoryUser categoryUser = this.categoryUserRepository.findById(id)
+                .orElseThrow(() -> new CategoryUserNotFoundException("User category with the ID " + id + " was not found.",
+                        HttpStatus.NOT_FOUND));
+        CategoryUser categoryUserUpdatedFields = CategoryUserUpdateDTO.toEntity(
+                categoryUserUpdateDTO,
+                categoryUser
+        );
+        return this.categoryUserRepository.save(categoryUserUpdatedFields);
     }
 
     /**
@@ -117,8 +106,9 @@ public class CategoryUserService {
      * @throws CategoryUserNotFoundException Se a categoria de usuário não for encontrada.
      */
     public void delete(Long id) {
-        CategoryUser categoryUser = this.categoryUserRepository.findById(id).orElse(null);
-        this.verifyCategoryUserNotFound(categoryUser, id);
+        CategoryUser categoryUser = this.categoryUserRepository.findById(id)
+         .orElseThrow(() -> new CategoryUserNotFoundException("User category with the ID " + id + " was not found.",
+                HttpStatus.NOT_FOUND));
         this.categoryUserRepository.delete(categoryUser);
     }
 }
