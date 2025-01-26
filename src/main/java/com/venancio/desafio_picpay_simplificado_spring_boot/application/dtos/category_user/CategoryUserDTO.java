@@ -9,11 +9,12 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.springframework.hateoas.EntityModel;
 
-import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.*;
-
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 /**
  * DTO (Data Transfer Object) para a entidade {@link CategoryUser}.
@@ -80,7 +81,7 @@ public class CategoryUserDTO extends EntityModel<CategoryUser> {
      * @param categoryUserDTO O DTO que receberá os links HATEOAS.
      * @return O DTO com os links HATEOAS adicionados.
      */
-    private static CategoryUserDTO generateHateoas(CategoryUserDTO categoryUserDTO) {
+    protected static CategoryUserDTO generateHateoas(CategoryUserDTO categoryUserDTO) {
         categoryUserDTO.add(
                 linkTo(methodOn(CategoryUserController.class).show(categoryUserDTO.getId())).withSelfRel()
         );
