@@ -6,6 +6,7 @@ import com.venancio.desafio_picpay_simplificado_spring_boot.application.dtos.cat
 import com.venancio.desafio_picpay_simplificado_spring_boot.application.utils.response.ResponseBuilder;
 import com.venancio.desafio_picpay_simplificado_spring_boot.domain.entities.CategoryUser;
 import com.venancio.desafio_picpay_simplificado_spring_boot.domain.services.CategoryUserService;
+import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -75,6 +76,7 @@ public class CategoryUserController {
      * @return Uma resposta contendo a categoria de usuário criada.
      */
     @PostMapping
+    @Transactional
     public ResponseEntity<Map<String, Object>> store(@RequestBody @Valid CategoryUserStoreDTO categoryUserStoreDTO) {
         CategoryUser categoryUserListDTO = this.categoryUserService.store(categoryUserStoreDTO);
         CategoryUserDTO categoryUserDTO = CategoryUserDTO.toDTO(categoryUserListDTO);
@@ -94,6 +96,7 @@ public class CategoryUserController {
      * @return Uma resposta contendo a categoria de usuário atualizada.
      */
     @PutMapping("/{id}")
+    @Transactional
     public ResponseEntity<Map<String, Object>> update(
             @PathVariable(name = "id") Long id,
             @RequestBody @Valid CategoryUserUpdateDTO categoryUserUpdateDTO) {
@@ -114,6 +117,7 @@ public class CategoryUserController {
      * @return Uma resposta confirmando a exclusão.
      */
     @DeleteMapping("/{id}")
+    @Transactional
     public ResponseEntity<Map<String, Object>> delete(@PathVariable(name = "id") Long id) {
         this.categoryUserService.delete(id);
         return new ResponseBuilder(
