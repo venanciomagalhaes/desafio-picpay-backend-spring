@@ -1,13 +1,10 @@
 package com.venancio.desafio_picpay_simplificado_spring_boot.application.dtos.user;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.venancio.desafio_picpay_simplificado_spring_boot.application.controllers.CategoryUserController;
 import com.venancio.desafio_picpay_simplificado_spring_boot.application.controllers.UserController;
 import com.venancio.desafio_picpay_simplificado_spring_boot.application.dtos.category_user.CategoryUserDTO;
 import com.venancio.desafio_picpay_simplificado_spring_boot.application.dtos.wallet.WalletDTO;
 import com.venancio.desafio_picpay_simplificado_spring_boot.domain.entities.CategoryUser;
 import com.venancio.desafio_picpay_simplificado_spring_boot.domain.entities.User;
-import com.venancio.desafio_picpay_simplificado_spring_boot.domain.entities.Wallet;
 import com.venancio.desafio_picpay_simplificado_spring_boot.domain.enums.CategoryUserNameEnum;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -38,7 +35,7 @@ public class UserDTO extends EntityModel<CategoryUser> {
 
     private WalletDTO wallet;
 
-    private CategoryUserNameEnum category;
+    private CategoryUserDTO category;
 
     private LocalDateTime created_at;
 
@@ -52,7 +49,7 @@ public class UserDTO extends EntityModel<CategoryUser> {
                 entity.getCpfCnpj(),
                 entity.getEmail(),
                 WalletDTO.toDTO(entity.getWallet()),
-                CategoryUserNameEnum.valueOf(entity.getCategory().getName().name()),
+                CategoryUserDTO.toDTO(entity.getCategory()),
                 entity.getCreatedAt(),
                 entity.getUpdatedAt()
         );
@@ -77,12 +74,12 @@ public class UserDTO extends EntityModel<CategoryUser> {
         userDTO.add(
                 linkTo(methodOn(UserController.class).store(null)).withRel("store")
         );
-//        userDTO.add(
-//                linkTo(methodOn(UserController.class).update(userDTO.getId(), null)).withRel("update")
-//        );
-//        userDTO.add(
-//                linkTo(methodOn(UserController.class).delete(userDTO.getId())).withRel("delete")
-//        );
+        userDTO.add(
+                linkTo(methodOn(UserController.class).update(userDTO.getId(), null)).withRel("update")
+        );
+        userDTO.add(
+                linkTo(methodOn(UserController.class).delete(userDTO.getId())).withRel("delete")
+        );
         return userDTO;
     }
 }

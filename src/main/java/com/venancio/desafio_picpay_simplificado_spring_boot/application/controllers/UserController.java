@@ -2,6 +2,7 @@ package com.venancio.desafio_picpay_simplificado_spring_boot.application.control
 
 import com.venancio.desafio_picpay_simplificado_spring_boot.application.dtos.user.UserDTO;
 import com.venancio.desafio_picpay_simplificado_spring_boot.application.dtos.user.UserStoreDTO;
+import com.venancio.desafio_picpay_simplificado_spring_boot.application.dtos.user.UserUpdateDTO;
 import com.venancio.desafio_picpay_simplificado_spring_boot.application.utils.response.ResponseBuilder;
 import com.venancio.desafio_picpay_simplificado_spring_boot.domain.entities.User;
 import com.venancio.desafio_picpay_simplificado_spring_boot.domain.services.UserService;
@@ -83,9 +84,36 @@ public class UserController {
         UserDTO userDTO = UserDTO.toDTO(user);
         return new ResponseBuilder(
                 "User created successfully!",
-                HttpStatus.OK
+                HttpStatus.CREATED
         )
         .setData(userDTO)
+        .build();
+    }
+
+    @PutMapping("/{id}")
+    @Transactional
+    public ResponseEntity<Map<String, Object>> update(
+            @PathVariable(name = "id") Long id,
+            @Valid  @RequestBody UserUpdateDTO userUpdateDTO
+            ) {
+        User user = this.userService.update(id, userUpdateDTO);
+        UserDTO userDTO = UserDTO.toDTO(user);
+        return new ResponseBuilder(
+                "User updated successfully!",
+                HttpStatus.OK
+        )
+                .setData(userDTO)
+                .build();
+    }
+
+    @DeleteMapping("/{id}")
+    @Transactional
+    public ResponseEntity<Map<String, Object>> delete(@PathVariable(name = "id") Long id) {
+        this.userService.delete(id);
+        return new ResponseBuilder(
+                "User deleted successfully!",
+                HttpStatus.OK
+        )
         .build();
     }
 }

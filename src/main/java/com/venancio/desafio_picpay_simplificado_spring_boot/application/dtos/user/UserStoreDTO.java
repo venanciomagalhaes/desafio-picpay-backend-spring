@@ -1,7 +1,7 @@
 package com.venancio.desafio_picpay_simplificado_spring_boot.application.dtos.user;
 
-import com.venancio.desafio_picpay_simplificado_spring_boot.application.validations.category_exist.UserCategoryExist;
-import com.venancio.desafio_picpay_simplificado_spring_boot.application.validations.cpf_cnpj_validation.CpfCnpj;
+import com.venancio.desafio_picpay_simplificado_spring_boot.application.validations.user_category.user_category_exist.UserCategoryExist;
+import com.venancio.desafio_picpay_simplificado_spring_boot.application.validations.cpf_cnpj.CpfCnpj;
 import com.venancio.desafio_picpay_simplificado_spring_boot.application.validations.strong_password.StrongPassword;
 import com.venancio.desafio_picpay_simplificado_spring_boot.domain.entities.CategoryUser;
 import com.venancio.desafio_picpay_simplificado_spring_boot.domain.entities.User;
@@ -23,6 +23,7 @@ public record UserStoreDTO(
         @Email(message = "The email field is invalid")
         String email,
         @NotEmpty(message = "The password field is required")
+        @Length(max = 255, min = 5, message = "The password must be between 5 and 255 characters")
         @StrongPassword
         String password,
         @NotNull(message = "The category_id field is required")
