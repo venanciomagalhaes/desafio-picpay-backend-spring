@@ -116,7 +116,7 @@ public class UserService {
         User user = this.userRepository.findById(id).orElse(null);
         this.throwExceptionIfUserNotFound(user, id);
 
-        CategoryUser categoryUser =  this.categoryUserRepository.findById(userUpdateDTO.category_id()).orElse(null);;
+        CategoryUser categoryUser =  this.categoryUserRepository.findById(userUpdateDTO.category_id()).orElse(null);
         this.throwExceptionIfUserCategoryNotFound(categoryUser, userUpdateDTO.category_id());
 
         this.throwExceptionIfEmailInUseForAnotherUser(userUpdateDTO, id);

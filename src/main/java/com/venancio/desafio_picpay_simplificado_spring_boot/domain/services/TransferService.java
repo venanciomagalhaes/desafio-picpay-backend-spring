@@ -5,10 +5,12 @@ import com.venancio.desafio_picpay_simplificado_spring_boot.application.dtos.tra
 import com.venancio.desafio_picpay_simplificado_spring_boot.application.mappers.TransactionMapper;
 import com.venancio.desafio_picpay_simplificado_spring_boot.application.utils.http_client.HttpClient;
 import com.venancio.desafio_picpay_simplificado_spring_boot.application.utils.http_client.UtilDeviToolsClient;
+import com.venancio.desafio_picpay_simplificado_spring_boot.application.utils.notifications.EmailNotification;
 import com.venancio.desafio_picpay_simplificado_spring_boot.domain.entities.Transaction;
 import com.venancio.desafio_picpay_simplificado_spring_boot.domain.entities.User;
 import com.venancio.desafio_picpay_simplificado_spring_boot.domain.enums.CategoryUserNameEnum;
 import com.venancio.desafio_picpay_simplificado_spring_boot.domain.enums.TransferStatus;
+import com.venancio.desafio_picpay_simplificado_spring_boot.domain.exceptions.email.EmailNotificationFailedException;
 import com.venancio.desafio_picpay_simplificado_spring_boot.domain.exceptions.transfer.*;
 import com.venancio.desafio_picpay_simplificado_spring_boot.domain.exceptions.user.UserNotFoundException;
 import com.venancio.desafio_picpay_simplificado_spring_boot.domain.repositories.TransactionRepository;
@@ -26,14 +28,14 @@ import java.util.List;
 public class TransferService {
 
     private static final int MAX_ATTEMPTS = 5;
-    private static final long INITIAL_BACKOFF_WITH_1S = 1000;
+    private static final int BACKOFF_ONE_TENTH_SECOND = 100;
 
     private final UserRepository userRepository;
     private final TransactionRepository transactionRepository;
     private final HttpClient utilDeviToolsClient;
 
     @Autowired
-    public TransferService(UserRepository userRepository, TransactionRepository transactionRepository, UtilDeviToolsClient utilDeviToolsClient) {
+    public TransferService(UserRepository userRepository, TransactionRepository transactionRepository, UtilDeviToolsClient utilDeviToolsClient, EmailNotification emailNotification) {
         this.userRepository = userRepository;
         this.transactionRepository = transactionRepository;
         this.utilDeviToolsClient = utilDeviToolsClient;
@@ -71,8 +73,40 @@ public class TransferService {
 
         transaction.setStatus(TransferStatus.finalized);
         this.transactionRepository.save(transaction);
+        this.sendNotificationsToPayerAndPayee(transactionStoreDTO, payee, payer);
 
         return transaction;
+    }
+
+    private void sendNotificationsToPayerAndPayee(TransactionStoreDTO transactionStoreDTO, User payee, User payer)  {
+
+        boolean isSend = false;
+        int attempt = 0;
+        while (attempt < MAX_ATTEMPTS) {
+            try {
+                this.utilDeviToolsClient.post("/v1/notify", null, null);
+                isSend = true;
+                break;
+            }  catch (Exception ignored) {
+            } finally {
+                attempt++;
+                this.addDelay(attempt, BACKOFF_ONE_TENTH_SECOND);
+            }
+        }
+        if (!isSend){
+            throw new EmailNotificationFailedException(
+                    "It was not possible to send the email notifications to the payer and payee.",
+                    HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    private void addDelay(int attempt, long initialBackoffWith1s) {
+        if (attempt < MAX_ATTEMPTS) {
+            try {
+                Thread.sleep(initialBackoffWith1s);
+            } catch (InterruptedException ignored) {
+            }
+        }
     }
 
     private void throwExceptionIfUserNotExists(User user, Long id) {
@@ -138,7 +172,6 @@ public class TransferService {
     private void verifyTransferAuthorization() {
         AuthorizationDTO authorizationDTO = null;
         int attempt = 0;
-        long backoff = INITIAL_BACKOFF_WITH_1S;
         while (attempt < MAX_ATTEMPTS) {
             try {
                 authorizationDTO = this.utilDeviToolsClient.get("/v2/authorize", AuthorizationDTO.class);
@@ -148,12 +181,7 @@ public class TransferService {
             } catch (RuntimeException ignored) {
             } finally {
                 attempt++;
-                if (attempt < MAX_ATTEMPTS) {
-                    try {
-                        Thread.sleep(backoff);
-                    } catch (InterruptedException ignored) {
-                    }
-                }
+                addDelay(attempt, BACKOFF_ONE_TENTH_SECOND);
             }
         }
         if (authorizationDTO == null || !authorizationDTO.getData().isAuthorized()){
