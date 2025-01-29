@@ -1,16 +1,14 @@
 package com.venancio.desafio_picpay_simplificado_spring_boot.application.dtos.transaction;
 
-import com.venancio.desafio_picpay_simplificado_spring_boot.application.dtos.user.UserDTO;
-import com.venancio.desafio_picpay_simplificado_spring_boot.application.validations.can_send_transfer.CanSendTransfer;
-import com.venancio.desafio_picpay_simplificado_spring_boot.application.validations.user_exist.UserExist;
-import jakarta.validation.constraints.Min;
-import jakarta.validation.constraints.NotNull;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.venancio.desafio_picpay_simplificado_spring_boot.domain.enums.TransferStatus;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 
 @AllArgsConstructor
 @Getter
@@ -18,10 +16,21 @@ import java.math.BigDecimal;
 @NoArgsConstructor
 public class TransactionDTO {
 
-    private UserDTO payer;
+    @JsonProperty("payer_name")
+    private String payerName;
 
-    private UserDTO payee;
+    @JsonProperty("payer_document")
+    private String payerCpfCnpj;
+
+    @JsonProperty("payee_name")
+    private String payeeName;
+
+    @JsonProperty("payee_document")
+    private String payeeCpfCnpj;
 
     private BigDecimal value;
+    private TransferStatus status;
 
+    @JsonProperty("created_at")
+    private LocalDateTime createdAt;
 }

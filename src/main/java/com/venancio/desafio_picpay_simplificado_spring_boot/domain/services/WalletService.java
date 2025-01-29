@@ -29,12 +29,12 @@ public class WalletService {
 
     /**
      * Cria uma carteira em branco para o usuário fornecido.
-     * A carteira será inicializada com um saldo de zero.
+     * A carteira será inicializada com um saldo de R$ 1.000,00.
      *
      * @param user O usuário para o qual a carteira será criada.
      * @return A carteira criada para o usuário.
      */
     public Wallet createABlankWallet(User user){
-        return this.walletRepository.save(new Wallet(null, BigDecimal.ZERO, user, null, null));
+        return this.walletRepository.save(new Wallet(null, BigDecimal.valueOf(1000), user, null, null));
     }
 }

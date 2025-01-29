@@ -22,9 +22,13 @@ public class TransactionMapper {
 
     public static TransactionDTO toDto(Transaction transaction) {
         return new TransactionDTO(
-            UserMapper.toDTO(transaction.getPayer()),
-            UserMapper.toDTO(transaction.getPayee()),
-            transaction.getValue()
+            transaction.getPayer().getName(),
+            transaction.getPayer().getCpfCnpj(),
+            transaction.getPayee().getName(),
+            transaction.getPayee().getCpfCnpj(),
+            transaction.getValue(),
+            transaction.getStatus(),
+            transaction.getCreatedAt()
         );
     }
 }

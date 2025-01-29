@@ -30,7 +30,7 @@ public class UserMapper {
                 entity.getCreatedAt(),
                 entity.getUpdatedAt()
         );
-        return generateHateoas(userDTO);
+        return userDTO.generateHateoas();
     }
 
 
@@ -69,25 +69,6 @@ public class UserMapper {
             }
 
             return user;
-    }
-
-    private static UserDTO generateHateoas(UserDTO userDTO) {
-        userDTO.add(
-                linkTo(methodOn(UserController.class).show(userDTO.getId())).withSelfRel()
-        );
-        userDTO.add(
-                linkTo(methodOn(UserController.class).index(null)).withRel("index")
-        );
-        userDTO.add(
-                linkTo(methodOn(UserController.class).store(null)).withRel("store")
-        );
-        userDTO.add(
-                linkTo(methodOn(UserController.class).update(userDTO.getId(), null)).withRel("update")
-        );
-        userDTO.add(
-                linkTo(methodOn(UserController.class).delete(userDTO.getId())).withRel("delete")
-        );
-        return userDTO;
     }
 
 }

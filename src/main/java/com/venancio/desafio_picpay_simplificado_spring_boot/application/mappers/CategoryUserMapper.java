@@ -28,7 +28,7 @@ public class CategoryUserMapper {
                 entities.getCreatedAt(),
                 entities.getUpdatedAt()
         );
-        return generateHateoas(categoryUserDTO);
+        return categoryUserDTO.generateHateoas();
     }
 
 
@@ -52,22 +52,5 @@ public class CategoryUserMapper {
         return categoryUser;
     }
 
-    protected static CategoryUserDTO generateHateoas(CategoryUserDTO categoryUserDTO) {
-        categoryUserDTO.add(
-                linkTo(methodOn(CategoryUserController.class).show(categoryUserDTO.getId())).withSelfRel()
-        );
-        categoryUserDTO.add(
-                linkTo(methodOn(CategoryUserController.class).index(null)).withRel("index")
-        );
-        categoryUserDTO.add(
-                linkTo(methodOn(CategoryUserController.class).store(null)).withRel("store")
-        );
-        categoryUserDTO.add(
-                linkTo(methodOn(CategoryUserController.class).update(categoryUserDTO.getId(), null)).withRel("update")
-        );
-        categoryUserDTO.add(
-                linkTo(methodOn(CategoryUserController.class).delete(categoryUserDTO.getId())).withRel("delete")
-        );
-        return categoryUserDTO;
-    }
+
 }
