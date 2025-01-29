@@ -6,15 +6,8 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
-import java.util.Optional;
 
-/**
- * Repositório para acesso e manipulação de dados relacionados à entidade {@link CategoryUser}.
- * Esta interface estende {@link JpaRepository} e fornece métodos adicionais para consulta
- * de categorias de usuários no banco de dados.
- *
- * @author Venâncio
- */
+
 @Repository
 public interface CategoryUserRepository extends JpaRepository<CategoryUser, Long> {
 
