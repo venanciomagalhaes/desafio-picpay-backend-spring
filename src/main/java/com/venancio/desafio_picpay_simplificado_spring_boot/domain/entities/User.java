@@ -9,6 +9,8 @@ import lombok.Setter;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @Table(name = "tb_users")
@@ -42,12 +44,29 @@ public class User implements Serializable {
     @JoinColumn(name = "category_id", nullable = false)
     private CategoryUser category;
 
-    @Column(nullable = false, name = "created_at")
+    @OneToMany(mappedBy = "payer", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    private Set<Transaction> payerTransactions = new HashSet<>();
+
+    @OneToMany(mappedBy = "payee", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    private Set<Transaction> payeeTransactions = new HashSet<>();;
+
+    @Column(nullable = false, name = "created_at", updatable = false)
     private LocalDateTime createdAt;
 
     @Column(nullable = false, name = "updated_at")
     private LocalDateTime updatedAt;
 
+    public User(String name,
+                String cpfCnpj,
+                String email,
+                String password,
+                CategoryUser category) {
+        this.name = name;
+        this.cpfCnpj = cpfCnpj;
+        this.email = email;
+        this.password = password;
+        this.category = category;
+    }
 
     /**
      * Define os valores de `createdAt` e `updatedAt` antes de persistir o objeto.

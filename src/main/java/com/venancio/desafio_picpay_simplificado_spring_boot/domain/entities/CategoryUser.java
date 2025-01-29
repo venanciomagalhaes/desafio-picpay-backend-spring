@@ -50,7 +50,7 @@ public class CategoryUser implements Serializable {
     /**
      * Data e hora em que a categoria foi criada.
      */
-    @Column(nullable = false, name = "created_at")
+    @Column(nullable = false, name = "created_at", updatable = false)
     private LocalDateTime createdAt;
 
     /**
