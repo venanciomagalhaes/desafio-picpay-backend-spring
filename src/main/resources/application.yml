@@ -15,3 +15,8 @@ spring:
     properties:
       hibernate:
         dialect: org.hibernate.dialect.MySQL8Dialect
+server:
+  port: 8080
+  servlet:
+    context-path: /
+    # doc nas urls : /swagger-ui/index.html# e /v3/api-docs

@@ -6,9 +6,12 @@ import com.venancio.desafio_picpay_simplificado_spring_boot.application.mappers.
 import com.venancio.desafio_picpay_simplificado_spring_boot.application.utils.response.ResponseBuilder;
 import com.venancio.desafio_picpay_simplificado_spring_boot.domain.entities.Transaction;
 import com.venancio.desafio_picpay_simplificado_spring_boot.domain.services.TransferService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -16,8 +19,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Map;
+
 @RestController
 @RequestMapping("/api/v1/transfer")
+@Tag(name = "Transferências", description = "Endpoints para realizar transferências entre usuários")
 public class TransferController {
 
     private final TransferService transferService;
@@ -27,7 +32,11 @@ public class TransferController {
         this.transferService = transferService;
     }
 
-    @PostMapping
+    @PostMapping()
+    @Operation(
+            summary = "Realizar transferência",
+            description = "Executa uma transferência entre usuários com base nos dados informados."
+    )
     public ResponseEntity<Map<String, Object>> transfer(@Valid @RequestBody TransactionStoreDTO transactionStoreDTO) {
         Transaction transaction = this.transferService.transfer(transactionStoreDTO);
         TransactionDTO transactionDTO = TransactionMapper.toDto(transaction);
@@ -35,7 +44,7 @@ public class TransferController {
                 "Transfer completed successfully",
                 HttpStatus.OK
         )
-        .setData(transactionDTO)
-        .build();
+                .setData(transactionDTO)
+                .build();
     }
 }

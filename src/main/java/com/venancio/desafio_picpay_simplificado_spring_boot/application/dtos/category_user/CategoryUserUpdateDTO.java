@@ -7,7 +7,6 @@ import jakarta.validation.constraints.NotEmpty;
 
 
 public record CategoryUserUpdateDTO(
-        @NotEmpty(message = "The name field is required")
         @UserCategoryNotExistByName
         @EnumValid(enumClass = CategoryUserNameEnum.class, message = "Invalid value for enum: [common, store]")
         String name

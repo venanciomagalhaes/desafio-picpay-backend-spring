@@ -22,7 +22,7 @@ public class UserCategoryNotExistValidator implements ConstraintValidator<UserCa
     public boolean isValid(String value, ConstraintValidatorContext context) {
         try {
             if (value == null || value.isEmpty()) {
-                return false;
+                return true;
             }
             List<CategoryUser> categoryUser = this.categoryUserRepository.findByName(
                     CategoryUserNameEnum.valueOf(value)
