@@ -36,8 +36,12 @@ import java.util.Map;
 @ControllerAdvice
 public class GlobalExceptionHandlerController {
 
+    private final GlobalExceptionHandlerService errorHandlerService;
+
     @Autowired
-    private GlobalExceptionHandlerService errorHandlerService;
+    public GlobalExceptionHandlerController(GlobalExceptionHandlerService errorHandlerService) {
+        this.errorHandlerService = errorHandlerService;
+    }
 
     /**
      * Captura exceções de validação de campos.
@@ -105,7 +109,7 @@ public class GlobalExceptionHandlerController {
     @ExceptionHandler(Exception.class)
     public ResponseEntity<Map<String, Object>> handleGenericException(Exception ex) {
         return new ResponseBuilder(
-                ex.toString(),
+                "Internal server error",
                 HttpStatus.INTERNAL_SERVER_ERROR
         ).build();
     }

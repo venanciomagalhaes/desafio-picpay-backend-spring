@@ -2,16 +2,20 @@ package com.venancio.desafio_picpay_simplificado_spring_boot.domain.services;
 
 import com.venancio.desafio_picpay_simplificado_spring_boot.application.dtos.category_user.CategoryUserStoreDTO;
 import com.venancio.desafio_picpay_simplificado_spring_boot.application.dtos.category_user.CategoryUserUpdateDTO;
+import com.venancio.desafio_picpay_simplificado_spring_boot.application.mappers.CategoryUserMapper;
 import com.venancio.desafio_picpay_simplificado_spring_boot.domain.entities.CategoryUser;
 import com.venancio.desafio_picpay_simplificado_spring_boot.domain.enums.CategoryUserNameEnum;
 import com.venancio.desafio_picpay_simplificado_spring_boot.domain.exceptions.category_user.CategoryUserAlreadyExistsException;
 import com.venancio.desafio_picpay_simplificado_spring_boot.domain.exceptions.category_user.CategoryUserNotFoundException;
 import com.venancio.desafio_picpay_simplificado_spring_boot.domain.repositories.CategoryUserRepository;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 /**
  * Serviço responsável pela lógica de negócios relacionada à entidade {@link CategoryUser}.
@@ -22,8 +26,12 @@ import org.springframework.stereotype.Service;
 @Service
 public class CategoryUserService {
 
+    private  final CategoryUserRepository categoryUserRepository;
+
     @Autowired
-    private CategoryUserRepository categoryUserRepository;
+    public CategoryUserService(CategoryUserRepository categoryUserRepository) {
+        this.categoryUserRepository = categoryUserRepository;
+    }
 
     /**
      * Recupera uma página de todas as categorias de usuário.
@@ -42,11 +50,11 @@ public class CategoryUserService {
      * @param dto Objeto contendo os dados da categoria a ser validada.
      * @throws CategoryUserAlreadyExistsException Se a categoria de usuário já existir.
      */
-    private void throwExceptionIfCategoryUserAlreadyExist(CategoryUserStoreDTO dto) {
-        CategoryUser categoryUser = this.categoryUserRepository.findByName(
+    private void throwExceptionIfCategoryUserAlreadyExist(@Valid CategoryUserStoreDTO dto) {
+        List<CategoryUser> categoryUser = this.categoryUserRepository.findByName(
                 CategoryUserNameEnum.valueOf(dto.name())
-        ).orElse(null);
-        if (categoryUser != null) {
+        );
+        if (!categoryUser.isEmpty()) {
             throw new CategoryUserAlreadyExistsException(
                     "There is already a user category with the name " + dto.name(),
                     HttpStatus.BAD_REQUEST
@@ -61,9 +69,9 @@ public class CategoryUserService {
      * @return A categoria de usuário criada.
      * @throws CategoryUserAlreadyExistsException Se a categoria de usuário já existir.
      */
-    public CategoryUser store(CategoryUserStoreDTO dto) {
+    public CategoryUser store(@Valid CategoryUserStoreDTO dto) {
         this.throwExceptionIfCategoryUserAlreadyExist(dto);
-        return this.categoryUserRepository.save(CategoryUserStoreDTO.toEntity(dto));
+        return this.categoryUserRepository.saveAndFlush(CategoryUserMapper.toEntityStore(dto));
     }
 
 
@@ -88,15 +96,15 @@ public class CategoryUserService {
      * @return A categoria de usuário atualizada.
      * @throws CategoryUserNotFoundException Se a categoria de usuário não for encontrada.
      */
-    public CategoryUser update(Long id, CategoryUserUpdateDTO categoryUserUpdateDTO) {
+    public CategoryUser update(Long id, @Valid CategoryUserUpdateDTO categoryUserUpdateDTO) {
         CategoryUser categoryUser = this.categoryUserRepository.findById(id)
                 .orElseThrow(() -> new CategoryUserNotFoundException("User category with the ID " + id + " was not found.",
                         HttpStatus.NOT_FOUND));
-        CategoryUser categoryUserUpdatedFields = CategoryUserUpdateDTO.toEntity(
+        CategoryUser categoryUserUpdatedFields = CategoryUserMapper.toEntityUpdate(
                 categoryUserUpdateDTO,
                 categoryUser
         );
-        return this.categoryUserRepository.save(categoryUserUpdatedFields);
+        return this.categoryUserRepository.saveAndFlush(categoryUserUpdatedFields);
     }
 
     /**

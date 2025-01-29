@@ -7,12 +7,17 @@ import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.util.List;
 import java.util.Optional;
 
 public class UserCategoryNotExistValidator implements ConstraintValidator<UserCategoryNotExistByName, String> {
 
+    private final CategoryUserRepository categoryUserRepository;
+
     @Autowired
-    private CategoryUserRepository categoryUserRepository;
+    public UserCategoryNotExistValidator(CategoryUserRepository categoryUserRepository) {
+        this.categoryUserRepository = categoryUserRepository;
+    }
 
     @Override
     public boolean isValid(String value, ConstraintValidatorContext context) {
@@ -20,7 +25,7 @@ public class UserCategoryNotExistValidator implements ConstraintValidator<UserCa
             if (value == null || value.isEmpty()) {
                 return false;
             }
-            Optional<CategoryUser> categoryUser = this.categoryUserRepository.findByName(
+            List<CategoryUser> categoryUser = this.categoryUserRepository.findByName(
                     CategoryUserNameEnum.valueOf(value)
             );
             return categoryUser.isEmpty();

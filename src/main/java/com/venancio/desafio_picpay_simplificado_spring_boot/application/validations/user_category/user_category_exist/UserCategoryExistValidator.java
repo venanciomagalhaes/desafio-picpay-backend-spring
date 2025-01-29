@@ -10,8 +10,12 @@ import java.util.Optional;
 
 public class UserCategoryExistValidator implements ConstraintValidator<UserCategoryExist, Long> {
 
+    private final CategoryUserRepository categoryUserRepository;
+
     @Autowired
-    private CategoryUserRepository categoryUserRepository;
+    public UserCategoryExistValidator(CategoryUserRepository categoryUserRepository) {
+        this.categoryUserRepository = categoryUserRepository;
+    }
 
     @Override
     public boolean isValid(Long value, ConstraintValidatorContext context) {
