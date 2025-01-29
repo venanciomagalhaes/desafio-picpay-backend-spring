@@ -6,7 +6,6 @@ import com.venancio.desafio_picpay_simplificado_spring_boot.application.mappers.
 import com.venancio.desafio_picpay_simplificado_spring_boot.application.utils.response.ResponseBuilder;
 import com.venancio.desafio_picpay_simplificado_spring_boot.domain.entities.Transaction;
 import com.venancio.desafio_picpay_simplificado_spring_boot.domain.services.TransferService;
-import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
