@@ -3,7 +3,6 @@ package com.venancio.desafio_picpay_simplificado_spring_boot.application.utils.h
 import org.springframework.http.*;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
-import org.springframework.core.ParameterizedTypeReference;
 
 @Component
 public class UtilDeviToolsClient implements HttpClient {

@@ -22,16 +22,25 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 
-
+/**
+ * Serviço de gerenciamento de usuários no sistema.
+ * Fornece métodos para criar, ler, atualizar e excluir usuários,
+ * além de verificar condições de validação relacionadas aos usuários e categorias.
+ */
 @Service
 public class UserService {
 
     private final UserRepository userRepository;
-
     private final CategoryUserRepository categoryUserRepository;
-
     private final WalletService walletService;
 
+    /**
+     * Construtor do serviço de usuário.
+     *
+     * @param userRepository         Repositório de usuários.
+     * @param categoryUserRepository Repositório de categorias de usuário.
+     * @param walletService          Serviço de carteiras de usuários.
+     */
     @Autowired
     public UserService(UserRepository userRepository, CategoryUserRepository categoryUserRepository, WalletService walletService) {
         this.userRepository = userRepository;
@@ -39,16 +48,36 @@ public class UserService {
         this.walletService = walletService;
     }
 
+    /**
+     * Retorna uma lista paginada de usuários.
+     *
+     * @param pageable Informações de paginação.
+     * @return Página de usuários.
+     */
     public Page<User> index(Pageable pageable){
         return this.userRepository.findAll(pageable);
     }
 
+    /**
+     * Retorna um usuário específico com base no ID fornecido.
+     *
+     * @param id ID do usuário a ser retornado.
+     * @return Usuário com o ID fornecido.
+     * @throws UserNotFoundException Se o usuário não for encontrado.
+     */
     public User show(Long id) {
         User user = this.userRepository.findById(id).orElse(null);
         this.throwExceptionIfUserNotFound(user, id);
         return user;
     }
 
+    /**
+     * Lança uma exceção se o usuário com o ID fornecido não for encontrado.
+     *
+     * @param user O usuário a ser verificado.
+     * @param id   O ID do usuário.
+     * @throws UserNotFoundException Se o usuário não for encontrado.
+     */
     private void throwExceptionIfUserNotFound(User user, Long id){
         if (user == null){
             throw new UserNotFoundException(
@@ -58,6 +87,14 @@ public class UserService {
         }
     }
 
+    /**
+     * Cria um novo usuário no sistema.
+     *
+     * @param userStoreDTO Dados de entrada para criar o usuário.
+     * @return O usuário criado.
+     * @throws UserAlreadyExistsException Se o usuário já existir com o mesmo CPF ou email.
+     * @throws CategoryUserNotFoundException Se a categoria do usuário não for encontrada.
+     */
     @Transactional
     public User store(@Valid UserStoreDTO userStoreDTO) {
         this.throwExceptionIfUserAlreadyExist(userStoreDTO);
@@ -70,11 +107,11 @@ public class UserService {
     }
 
     /**
-     * Verifica se a categoria de usuário não foi encontrada.
+     * Lança uma exceção se a categoria do usuário não for encontrada.
      *
      * @param categoryUser A categoria de usuário a ser verificada.
-     * @param id O id da categoria de usuário a ser verificada.
-     * @throws CategoryUserNotFoundException Se a categoria de usuário não for encontrada.
+     * @param id O ID da categoria.
+     * @throws CategoryUserNotFoundException Se a categoria do usuário não for encontrada.
      */
     private void throwExceptionIfUserCategoryNotFound(CategoryUser categoryUser, Long id){
         if (categoryUser == null){
@@ -85,6 +122,12 @@ public class UserService {
         }
     }
 
+    /**
+     * Lança uma exceção se o CPF ou email do usuário já estiver em uso.
+     *
+     * @param userStoreDTO Dados de entrada do novo usuário.
+     * @throws UserAlreadyExistsException Se já existir um usuário com o mesmo CPF ou email.
+     */
     private void throwExceptionIfUserAlreadyExist(@Valid UserStoreDTO userStoreDTO){
         List<User> userExist = this.userRepository.findByCpfCnpjOrEmail(
                 userStoreDTO.cpf_cnpj(),
@@ -98,6 +141,13 @@ public class UserService {
         }
     }
 
+    /**
+     * Lança uma exceção se o email fornecido já estiver em uso por outro usuário.
+     *
+     * @param userUpdateDTO Dados de atualização do usuário.
+     * @param id            ID do usuário a ser atualizado.
+     * @throws EmailInUseForAnotherUser Se o email já estiver em uso por outro usuário.
+     */
     private void throwExceptionIfEmailInUseForAnotherUser(@Valid UserUpdateDTO userUpdateDTO, Long id){
         List<User> userExist = this.userRepository.existsByEmailInAnotherUser(
                 userUpdateDTO.email(),
@@ -111,6 +161,16 @@ public class UserService {
         }
     }
 
+    /**
+     * Atualiza os dados de um usuário existente no sistema.
+     *
+     * @param id ID do usuário a ser atualizado.
+     * @param userUpdateDTO Dados de atualização do usuário.
+     * @return O usuário atualizado.
+     * @throws UserNotFoundException Se o usuário não for encontrado.
+     * @throws CategoryUserNotFoundException Se a categoria do usuário não for encontrada.
+     * @throws EmailInUseForAnotherUser Se o email fornecido já estiver em uso por outro usuário.
+     */
     @Transactional
     public User update(Long id, @Valid UserUpdateDTO userUpdateDTO) {
         User user = this.userRepository.findById(id).orElse(null);
@@ -130,6 +190,12 @@ public class UserService {
         return this.userRepository.save(userUpdatedFields);
     }
 
+    /**
+     * Exclui um usuário do sistema com base no ID fornecido.
+     *
+     * @param id ID do usuário a ser excluído.
+     * @throws UserNotFoundException Se o usuário não for encontrado.
+     */
     @Transactional
     public void delete(Long id) {
         User user = this.userRepository.findById(id).orElse(null);

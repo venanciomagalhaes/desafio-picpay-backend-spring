@@ -4,14 +4,12 @@ import com.venancio.desafio_picpay_simplificado_spring_boot.domain.entities.Cate
 import com.venancio.desafio_picpay_simplificado_spring_boot.domain.entities.User;
 import com.venancio.desafio_picpay_simplificado_spring_boot.domain.enums.CategoryUserNameEnum;
 import com.venancio.desafio_picpay_simplificado_spring_boot.domain.exceptions.user.UserNotFoundException;
-import com.venancio.desafio_picpay_simplificado_spring_boot.domain.repositories.CategoryUserRepository;
 import com.venancio.desafio_picpay_simplificado_spring_boot.domain.repositories.UserRepository;
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 
-import java.util.Optional;
 
 public class CanSendTransferValidator implements ConstraintValidator<CanSendTransfer, Long> {
 

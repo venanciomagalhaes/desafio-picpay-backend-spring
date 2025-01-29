@@ -24,6 +24,12 @@ import org.springframework.stereotype.Service;
 import java.math.BigDecimal;
 import java.util.List;
 
+/**
+ * Serviço responsável pela lógica de transferência de valores entre usuários.
+ * Realiza as validações necessárias e envia notificações sobre o status da transação.
+ *
+ * @author Venâncio
+ */
 @Service
 public class TransferService {
 
@@ -34,6 +40,13 @@ public class TransferService {
     private final TransactionRepository transactionRepository;
     private final HttpClient utilDeviToolsClient;
 
+    /**
+     * Construtor do serviço de transferência.
+     *
+     * @param userRepository Repositório de usuários.
+     * @param transactionRepository Repositório de transações.
+     * @param utilDeviToolsClient Cliente HTTP para chamadas externas.
+     */
     @Autowired
     public TransferService(UserRepository userRepository, TransactionRepository transactionRepository, UtilDeviToolsClient utilDeviToolsClient, EmailNotification emailNotification) {
         this.userRepository = userRepository;
@@ -41,6 +54,19 @@ public class TransferService {
         this.utilDeviToolsClient = utilDeviToolsClient;
     }
 
+    /**
+     * Realiza a transferência entre dois usuários.
+     *
+     * @param transactionStoreDTO DTO contendo os dados da transação.
+     * @return A transação realizada.
+     * @throws UserNotFoundException Se o usuário pagador ou recebedor não forem encontrados.
+     * @throws UserCannotMakeTransfers Se o pagador não puder realizar transferências.
+     * @throws CannotTransferMoneyToThemselvesException Se o pagador tentar transferir para si mesmo.
+     * @throws InsufficientBalanceException Se o pagador não tiver saldo suficiente.
+     * @throws TransferValueMustBeGreaterThanZeroException Se o valor da transferência for inválido.
+     * @throws PayerHasPendingTransfers Se o pagador tiver transferências pendentes.
+     * @throws UnauthorizedTransferException Se a transferência não for autorizada.
+     */
     @Transactional
     public Transaction transfer(@Valid TransactionStoreDTO transactionStoreDTO) {
         User payer = this.userRepository.findById(transactionStoreDTO.getPayer()).orElse(null);
@@ -78,8 +104,15 @@ public class TransferService {
         return transaction;
     }
 
+    /**
+     * Envia notificações de email para o pagador e o recebedor sobre o status da transação.
+     *
+     * @param transactionStoreDTO DTO da transação.
+     * @param payee Usuário recebedor da transação.
+     * @param payer Usuário pagador da transação.
+     * @throws EmailNotificationFailedException Se não for possível enviar as notificações.
+     */
     private void sendNotificationsToPayerAndPayee(TransactionStoreDTO transactionStoreDTO, User payee, User payer)  {
-
         boolean isSend = false;
         int attempt = 0;
         while (attempt < MAX_ATTEMPTS) {
@@ -87,7 +120,7 @@ public class TransferService {
                 this.utilDeviToolsClient.post("/v1/notify", null, null);
                 isSend = true;
                 break;
-            }  catch (Exception ignored) {
+            } catch (Exception ignored) {
             } finally {
                 attempt++;
                 this.addDelay(attempt, BACKOFF_ONE_TENTH_SECOND);
@@ -100,6 +133,12 @@ public class TransferService {
         }
     }
 
+    /**
+     * Adiciona um atraso entre as tentativas de envio de notificação.
+     *
+     * @param attempt O número da tentativa atual.
+     * @param initialBackoffWith1s O tempo de espera inicial para o backoff.
+     */
     private void addDelay(int attempt, long initialBackoffWith1s) {
         if (attempt < MAX_ATTEMPTS) {
             try {
@@ -109,6 +148,13 @@ public class TransferService {
         }
     }
 
+    /**
+     * Lança uma exceção caso o usuário não seja encontrado.
+     *
+     * @param user O usuário a ser verificado.
+     * @param id O ID do usuário.
+     * @throws UserNotFoundException Se o usuário não for encontrado.
+     */
     private void throwExceptionIfUserNotExists(User user, Long id) {
         if (user == null) {
             throw new UserNotFoundException(
@@ -118,6 +164,13 @@ public class TransferService {
         }
     }
 
+    /**
+     * Lança uma exceção caso o pagador não possa realizar transferências.
+     *
+     * @param user O usuário a ser verificado.
+     * @param id O ID do usuário.
+     * @throws UserCannotMakeTransfers Se o pagador não puder realizar transferências.
+     */
     private void throwExceptionIfPayerIsNotCommon(User user, Long id) {
         if (user != null) {
             String categoryNameUser = user.getCategory().getName().name();
@@ -132,6 +185,13 @@ public class TransferService {
         }
     }
 
+    /**
+     * Lança uma exceção caso o pagador tente transferir para si mesmo.
+     *
+     * @param payer O usuário pagador.
+     * @param payee O usuário recebedor.
+     * @throws CannotTransferMoneyToThemselvesException Se o pagador tentar transferir para si mesmo.
+     */
     private void throwExceptionIfPayerIsPayee(User payer, User payee) {
         if (payer.getId().equals(payee.getId())) {
             throw new CannotTransferMoneyToThemselvesException(
@@ -141,6 +201,13 @@ public class TransferService {
         }
     }
 
+    /**
+     * Lança uma exceção caso o saldo do pagador seja insuficiente.
+     *
+     * @param balancePayer O saldo do pagador.
+     * @param valueOfTransfer O valor da transferência.
+     * @throws InsufficientBalanceException Se o saldo for insuficiente.
+     */
     private void throwExceptionIfInsufficientBalancePayer(BigDecimal balancePayer, BigDecimal valueOfTransfer) {
         if (balancePayer.compareTo(valueOfTransfer) < 0) {
             throw new InsufficientBalanceException(
@@ -150,6 +217,12 @@ public class TransferService {
         }
     }
 
+    /**
+     * Lança uma exceção caso o valor da transferência seja inválido (menor ou igual a zero).
+     *
+     * @param valueOfTransfer O valor da transferência.
+     * @throws TransferValueMustBeGreaterThanZeroException Se o valor for inválido.
+     */
     private void throwExceptionIfTransferValueIsInvalid(BigDecimal valueOfTransfer) {
         if (valueOfTransfer.compareTo(BigDecimal.ZERO) <= 0) {
             throw new TransferValueMustBeGreaterThanZeroException(
@@ -159,6 +232,12 @@ public class TransferService {
         }
     }
 
+    /**
+     * Lança uma exceção caso o pagador tenha transferências pendentes.
+     *
+     * @param payer O pagador.
+     * @throws PayerHasPendingTransfers Se o pagador tiver transferências pendentes.
+     */
     private void throwExceptionIfPayerHasPendingTransfers(User payer) {
         List<Transaction> payerHasPendingTransfers = this.transactionRepository.findPendingTransfersWithPayerUser(payer.getId());
         if (!payerHasPendingTransfers.isEmpty()){
@@ -169,6 +248,11 @@ public class TransferService {
         }
     }
 
+    /**
+     * Verifica se a transferência está autorizada por um sistema externo.
+     *
+     * @throws UnauthorizedTransferException Se a transferência não for autorizada.
+     */
     private void verifyTransferAuthorization() {
         AuthorizationDTO authorizationDTO = null;
         int attempt = 0;

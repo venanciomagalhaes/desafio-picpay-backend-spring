@@ -1,8 +1,5 @@
 package com.venancio.desafio_picpay_simplificado_spring_boot.application.validations.user_exist;
 
-import com.venancio.desafio_picpay_simplificado_spring_boot.domain.entities.CategoryUser;
-import com.venancio.desafio_picpay_simplificado_spring_boot.domain.entities.User;
-import com.venancio.desafio_picpay_simplificado_spring_boot.domain.enums.CategoryUserNameEnum;
 import com.venancio.desafio_picpay_simplificado_spring_boot.domain.exceptions.user.UserNotFoundException;
 import com.venancio.desafio_picpay_simplificado_spring_boot.domain.repositories.UserRepository;
 import jakarta.validation.ConstraintValidator;

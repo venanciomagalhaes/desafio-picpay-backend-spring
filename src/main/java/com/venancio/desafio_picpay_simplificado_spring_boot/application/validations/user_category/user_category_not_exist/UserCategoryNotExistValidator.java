@@ -8,7 +8,6 @@ import jakarta.validation.ConstraintValidatorContext;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.List;
-import java.util.Optional;
 
 public class UserCategoryNotExistValidator implements ConstraintValidator<UserCategoryNotExistByName, String> {
 

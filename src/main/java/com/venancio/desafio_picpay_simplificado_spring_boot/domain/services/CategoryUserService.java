@@ -26,8 +26,13 @@ import java.util.List;
 @Service
 public class CategoryUserService {
 
-    private  final CategoryUserRepository categoryUserRepository;
+    private final CategoryUserRepository categoryUserRepository;
 
+    /**
+     * Construtor da classe {@link CategoryUserService}.
+     *
+     * @param categoryUserRepository O repositório de {@link CategoryUser} para interações com o banco de dados.
+     */
     @Autowired
     public CategoryUserService(CategoryUserRepository categoryUserRepository) {
         this.categoryUserRepository = categoryUserRepository;
@@ -39,14 +44,13 @@ public class CategoryUserService {
      * @param pageable Objeto que define a paginação das categorias de usuário.
      * @return Uma página contendo as categorias de usuário.
      */
-    public Page<CategoryUser> index(Pageable pageable){
+    public Page<CategoryUser> index(Pageable pageable) {
         return this.categoryUserRepository.findAll(pageable);
     }
 
     /**
      * Verifica se a categoria de usuário já existe.
      *
-     * @param categoryUser A categoria de usuário a ser verificada.
      * @param dto Objeto contendo os dados da categoria a ser validada.
      * @throws CategoryUserAlreadyExistsException Se a categoria de usuário já existir.
      */
@@ -73,7 +77,6 @@ public class CategoryUserService {
         this.throwExceptionIfCategoryUserAlreadyExist(dto);
         return this.categoryUserRepository.saveAndFlush(CategoryUserMapper.toEntityStore(dto));
     }
-
 
     /**
      * Recupera uma categoria de usuário pelo ID.
@@ -115,8 +118,8 @@ public class CategoryUserService {
      */
     public void delete(Long id) {
         CategoryUser categoryUser = this.categoryUserRepository.findById(id)
-         .orElseThrow(() -> new CategoryUserNotFoundException("User category with the ID " + id + " was not found.",
-                HttpStatus.NOT_FOUND));
+                .orElseThrow(() -> new CategoryUserNotFoundException("User category with the ID " + id + " was not found.",
+                        HttpStatus.NOT_FOUND));
         this.categoryUserRepository.delete(categoryUser);
     }
 }
