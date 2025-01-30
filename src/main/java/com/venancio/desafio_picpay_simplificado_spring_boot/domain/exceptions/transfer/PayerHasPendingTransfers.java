@@ -8,4 +8,11 @@ public class PayerHasPendingTransfers extends BusinessException {
     public PayerHasPendingTransfers(String message, HttpStatus httpStatus) {
         super(message, httpStatus);
     }
+
+    public static void throwDefaultMessage(){
+        throw new PayerHasPendingTransfers(
+                "The payer has pending transfers and cannot initiate a new one until they are resolved.",
+                HttpStatus.BAD_REQUEST
+        );
+    }
 }

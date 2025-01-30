@@ -8,4 +8,11 @@ public class CannotTransferMoneyToThemselvesException extends BusinessException 
     public CannotTransferMoneyToThemselvesException(String message, HttpStatus httpStatus) {
         super(message, httpStatus);
     }
+
+    public static void throwDefaultMessage(){
+        throw new CannotTransferMoneyToThemselvesException(
+                "A user cannot transfer money to themselves.",
+                HttpStatus.BAD_REQUEST
+        );
+    }
 }

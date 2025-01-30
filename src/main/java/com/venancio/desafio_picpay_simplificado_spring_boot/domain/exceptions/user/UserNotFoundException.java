@@ -8,4 +8,11 @@ public class UserNotFoundException extends BusinessException {
     public UserNotFoundException(String message, HttpStatus httpStatus) {
         super(message, httpStatus);
     }
+
+    public static void throwDefaultMessage(Long id) {
+        throw new UserNotFoundException(
+                "User with the ID " + id + " was not found.",
+                HttpStatus.NOT_FOUND
+        );
+    }
 }

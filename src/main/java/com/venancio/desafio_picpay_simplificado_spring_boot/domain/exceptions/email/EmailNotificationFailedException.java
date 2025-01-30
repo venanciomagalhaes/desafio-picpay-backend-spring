@@ -8,4 +8,11 @@ public class EmailNotificationFailedException extends BusinessException {
     public EmailNotificationFailedException(String message, HttpStatus httpStatus) {
         super(message, httpStatus);
     }
+
+    public static void throwDefaultMessage(){
+        throw new EmailNotificationFailedException(
+                "It was not possible to send the email notifications to the payer and payee.",
+                HttpStatus.INTERNAL_SERVER_ERROR
+        );
+    }
 }

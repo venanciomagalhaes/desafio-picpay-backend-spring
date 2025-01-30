@@ -8,4 +8,11 @@ public class UserCannotMakeTransfers extends BusinessException {
     public UserCannotMakeTransfers(String message, HttpStatus httpStatus) {
         super(message, httpStatus);
     }
+
+    public static void throwDefaultMessage(Long id) {
+        throw new UserCannotMakeTransfers(
+                String.format("User with ID %d cannot make transfers.", id),
+                HttpStatus.BAD_REQUEST
+        );
+    }
 }

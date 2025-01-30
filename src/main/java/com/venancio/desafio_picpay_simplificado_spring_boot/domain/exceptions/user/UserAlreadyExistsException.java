@@ -8,4 +8,11 @@ public class UserAlreadyExistsException extends BusinessException {
     public UserAlreadyExistsException(String message, HttpStatus httpStatus) {
         super(message, httpStatus);
     }
+
+    public static void throwDefaultMessage() {
+        throw new UserAlreadyExistsException(
+                "A user with this email or CPF/CNPJ already exists.",
+                HttpStatus.BAD_REQUEST
+        );
+    }
 }

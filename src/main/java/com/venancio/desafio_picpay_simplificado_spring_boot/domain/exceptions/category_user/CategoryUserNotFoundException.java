@@ -9,4 +9,11 @@ public class CategoryUserNotFoundException extends BusinessException {
     public CategoryUserNotFoundException(String message, HttpStatus httpStatus) {
         super(message, httpStatus);
     }
+
+    public static void throwDefaultMessage(Long id){
+        throw new CategoryUserNotFoundException(
+                "User category with the ID " + id + " was not found.",
+                HttpStatus.NOT_FOUND
+        );
+    }
 }

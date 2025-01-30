@@ -8,4 +8,11 @@ public class UnauthorizedTransferException extends BusinessException {
     public UnauthorizedTransferException(String message, HttpStatus httpStatus) {
         super(message, httpStatus);
     }
+
+    public static void throwDefaultMessage() {
+        throw new UnauthorizedTransferException(
+                "Authorization failed: Unauthorized transfer",
+                HttpStatus.UNAUTHORIZED
+        );
+    }
 }

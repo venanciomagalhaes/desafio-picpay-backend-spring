@@ -8,4 +8,11 @@ public class EmailInUseForAnotherUser extends BusinessException {
     public EmailInUseForAnotherUser(String message, HttpStatus httpStatus) {
         super(message, httpStatus);
     }
+
+    public static void throwDefaultMessage() {
+        throw new EmailInUseForAnotherUser(
+                "This email is in use for another user.",
+                HttpStatus.BAD_REQUEST
+        );
+    }
 }

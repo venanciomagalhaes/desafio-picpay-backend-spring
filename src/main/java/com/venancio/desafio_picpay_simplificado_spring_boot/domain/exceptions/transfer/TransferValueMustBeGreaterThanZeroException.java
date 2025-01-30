@@ -8,4 +8,11 @@ public class TransferValueMustBeGreaterThanZeroException extends BusinessExcepti
     public TransferValueMustBeGreaterThanZeroException(String message, HttpStatus httpStatus) {
         super(message, httpStatus);
     }
+
+    public static void throwDefaultMessage(){
+        throw new TransferValueMustBeGreaterThanZeroException(
+                "Transfer value must be greater than zero.",
+                HttpStatus.BAD_REQUEST
+        );
+    }
 }

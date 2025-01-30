@@ -8,4 +8,11 @@ public class InsufficientBalanceException extends BusinessException {
     public InsufficientBalanceException(String message, HttpStatus httpStatus) {
         super(message, httpStatus);
     }
+
+    public static void throwDefaultMessage(){
+        throw new InsufficientBalanceException(
+                "The payer's balance is insufficient to complete the transfer.",
+                HttpStatus.BAD_REQUEST
+        );
+    }
 }
