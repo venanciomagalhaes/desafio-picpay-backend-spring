@@ -1,0 +1,18 @@
+spring:
+  application:
+    name: desafio_picpay_simplificado
+
+  datasource:
+#    url: jdbc:mysql://mysql-test/desafio_picpay_simplificado_test #para build
+    url: jdbc:mysql://localhost:1225/desafio_picpay_simplificado_test #para test intellij
+    username: venancio_test
+    password: senha_qualquer_test
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
+  jpa:
+    hibernate:
+      ddl-auto: create
+    show-sql: false
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MySQL8Dialect

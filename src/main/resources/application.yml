@@ -3,7 +3,8 @@ spring:
     name: desafio_picpay_simplificado
 
   datasource:
-    url: jdbc:mysql://mysql:3306/desafio_picpay_simplificado
+#    url: jdbc:mysql://mysql/desafio_picpay_simplificado # para build
+    url: jdbc:mysql://localhost:1224/desafio_picpay_simplificado #para test intellij
     username: venancio
     password: senha_qualquer
     driver-class-name: com.mysql.cj.jdbc.Driver
