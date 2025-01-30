@@ -2,6 +2,9 @@ package com.venancio.desafio_picpay_simplificado_spring_boot.domain.exceptions.u
 
 import com.venancio.desafio_picpay_simplificado_spring_boot.domain.exceptions.BusinessException;
 import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.ResponseStatus;
+
+@ResponseStatus(HttpStatus.NOT_FOUND)
 
 public class UserNotFoundException extends BusinessException {
 
