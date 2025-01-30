@@ -17,7 +17,6 @@ import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -80,10 +79,7 @@ public class UserService {
      */
     private void throwExceptionIfUserNotFound(User user, Long id){
         if (user == null){
-            throw new UserNotFoundException(
-                    "User with the ID " + id + " was not found.",
-                    HttpStatus.NOT_FOUND
-            );
+           UserNotFoundException.throwDefaultMessage(id);
         }
     }
 
@@ -115,10 +111,7 @@ public class UserService {
      */
     private void throwExceptionIfUserCategoryNotFound(CategoryUser categoryUser, Long id){
         if (categoryUser == null){
-            throw new CategoryUserNotFoundException(
-                    "User category with the ID " + id + " was not found.",
-                    HttpStatus.NOT_FOUND
-            );
+            CategoryUserNotFoundException.throwDefaultMessage(id);
         }
     }
 
@@ -134,10 +127,7 @@ public class UserService {
                 userStoreDTO.email()
         );
         if (!userExist.isEmpty()){
-            throw new UserAlreadyExistsException(
-                    "A user with this email or CPF/CNPJ already exists.",
-                    HttpStatus.BAD_REQUEST
-            );
+            UserAlreadyExistsException.throwDefaultMessage();
         }
     }
 
@@ -154,10 +144,7 @@ public class UserService {
                 id
         );
         if (!userExist.isEmpty()){
-            throw new EmailInUseForAnotherUser(
-                    "This email is in use for another user.",
-                    HttpStatus.BAD_REQUEST
-            );
+           EmailInUseForAnotherUser.throwDefaultMessage();
         }
     }
 

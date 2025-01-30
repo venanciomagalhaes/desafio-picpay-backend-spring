@@ -18,7 +18,6 @@ import com.venancio.desafio_picpay_simplificado_spring_boot.domain.repositories.
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -123,13 +122,11 @@ public class TransferService {
             } catch (Exception ignored) {
             } finally {
                 attempt++;
-                this.addDelay(attempt, BACKOFF_ONE_TENTH_SECOND);
+                this.addDelay(attempt);
             }
         }
         if (!isSend){
-            throw new EmailNotificationFailedException(
-                    "It was not possible to send the email notifications to the payer and payee.",
-                    HttpStatus.INTERNAL_SERVER_ERROR);
+            EmailNotificationFailedException.throwDefaultMessage();
         }
     }
 
@@ -137,12 +134,11 @@ public class TransferService {
      * Adiciona um atraso entre as tentativas de envio de notificação.
      *
      * @param attempt O número da tentativa atual.
-     * @param initialBackoffWith1s O tempo de espera inicial para o backoff.
      */
-    private void addDelay(int attempt, long initialBackoffWith1s) {
+    private void addDelay(int attempt) {
         if (attempt < MAX_ATTEMPTS) {
             try {
-                Thread.sleep(initialBackoffWith1s);
+                Thread.sleep(TransferService.BACKOFF_ONE_TENTH_SECOND);
             } catch (InterruptedException ignored) {
             }
         }
@@ -157,10 +153,7 @@ public class TransferService {
      */
     private void throwExceptionIfUserNotExists(User user, Long id) {
         if (user == null) {
-            throw new UserNotFoundException(
-                    String.format("User with ID %d was not found.", id),
-                    HttpStatus.NOT_FOUND
-            );
+            UserNotFoundException.throwDefaultMessage(id);
         }
     }
 
@@ -177,10 +170,7 @@ public class TransferService {
             String commonUserCategory = CategoryUserNameEnum.common.name();
             boolean isCommonUser = categoryNameUser.equals(commonUserCategory);
             if (!isCommonUser) {
-                throw new UserCannotMakeTransfers(
-                        String.format("User with ID %d cannot make transfers.", id),
-                        HttpStatus.BAD_REQUEST
-                );
+               UserCannotMakeTransfers.throwDefaultMessage(id);
             }
         }
     }
@@ -194,10 +184,7 @@ public class TransferService {
      */
     private void throwExceptionIfPayerIsPayee(User payer, User payee) {
         if (payer.getId().equals(payee.getId())) {
-            throw new CannotTransferMoneyToThemselvesException(
-                    "A user cannot transfer money to themselves.",
-                    HttpStatus.BAD_REQUEST
-            );
+           CannotTransferMoneyToThemselvesException.throwDefaultMessage();
         }
     }
 
@@ -210,10 +197,7 @@ public class TransferService {
      */
     private void throwExceptionIfInsufficientBalancePayer(BigDecimal balancePayer, BigDecimal valueOfTransfer) {
         if (balancePayer.compareTo(valueOfTransfer) < 0) {
-            throw new InsufficientBalanceException(
-                    "The payer's balance is insufficient to complete the transfer.",
-                    HttpStatus.BAD_REQUEST
-            );
+          InsufficientBalanceException.throwDefaultMessage();
         }
     }
 
@@ -225,10 +209,7 @@ public class TransferService {
      */
     private void throwExceptionIfTransferValueIsInvalid(BigDecimal valueOfTransfer) {
         if (valueOfTransfer.compareTo(BigDecimal.ZERO) <= 0) {
-            throw new TransferValueMustBeGreaterThanZeroException(
-                    "Transfer value must be greater than zero.",
-                    HttpStatus.BAD_REQUEST
-            );
+            TransferValueMustBeGreaterThanZeroException.throwDefaultMessage();
         }
     }
 
@@ -241,10 +222,7 @@ public class TransferService {
     private void throwExceptionIfPayerHasPendingTransfers(User payer) {
         List<Transaction> payerHasPendingTransfers = this.transactionRepository.findPendingTransfersWithPayerUser(payer.getId());
         if (!payerHasPendingTransfers.isEmpty()){
-            throw new PayerHasPendingTransfers(
-                    "The payer has pending transfers and cannot initiate a new one until they are resolved.",
-                    HttpStatus.BAD_REQUEST
-            );
+           PayerHasPendingTransfers.throwDefaultMessage();
         }
     }
 
@@ -265,14 +243,11 @@ public class TransferService {
             } catch (RuntimeException ignored) {
             } finally {
                 attempt++;
-                addDelay(attempt, BACKOFF_ONE_TENTH_SECOND);
+                addDelay(attempt);
             }
         }
         if (authorizationDTO == null || !authorizationDTO.getData().isAuthorized()){
-            throw new UnauthorizedTransferException(
-                    "Authorization failed: Unauthorized transfer",
-                    HttpStatus.UNAUTHORIZED
-            );
+           UnauthorizedTransferException.throwDefaultMessage();
         }
     }
 }

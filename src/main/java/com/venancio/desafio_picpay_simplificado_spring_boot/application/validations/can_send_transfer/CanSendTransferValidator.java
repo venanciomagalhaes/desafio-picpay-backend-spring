@@ -23,11 +23,10 @@ public class CanSendTransferValidator implements ConstraintValidator<CanSendTran
     @Override
     public boolean isValid(Long value, ConstraintValidatorContext context) {
         try {
-            User user = this.userRepository.findById(value)
-                    .orElseThrow(() -> new UserNotFoundException(
-                            "User with the ID " + value + " was not found.",
-                            HttpStatus.NOT_FOUND
-                    ));
+            User user = this.userRepository.findById(value).orElse(null);
+            if (user == null){
+                UserNotFoundException.throwDefaultMessage(value);
+            }
             CategoryUser categoryUser = user.getCategory();
             return CategoryUserNameEnum.common.name().equals(categoryUser.getName().name());
         } catch (Exception e) {

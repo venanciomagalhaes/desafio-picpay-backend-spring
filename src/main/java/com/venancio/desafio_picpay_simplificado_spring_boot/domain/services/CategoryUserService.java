@@ -12,7 +12,6 @@ import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -59,10 +58,7 @@ public class CategoryUserService {
                 CategoryUserNameEnum.valueOf(dto.name())
         );
         if (!categoryUser.isEmpty()) {
-            throw new CategoryUserAlreadyExistsException(
-                    "There is already a user category with the name " + dto.name(),
-                    HttpStatus.BAD_REQUEST
-            );
+            CategoryUserAlreadyExistsException.throwDefaultMessage(dto.name());
         }
     }
 
@@ -86,9 +82,15 @@ public class CategoryUserService {
      * @throws CategoryUserNotFoundException Se a categoria de usuário não for encontrada.
      */
     public CategoryUser show(Long id) {
-        return this.categoryUserRepository.findById(id)
-                .orElseThrow(() -> new CategoryUserNotFoundException("User category with the ID " + id + " was not found.",
-                        HttpStatus.NOT_FOUND));
+        CategoryUser categoryUser = this.categoryUserRepository.findById(id).orElse(null);
+        this.throwExceptionIfCategoryUserNotFound(id, categoryUser);
+        return categoryUser;
+    }
+
+    private void throwExceptionIfCategoryUserNotFound(Long id, CategoryUser categoryUser) {
+        if (categoryUser == null){
+            CategoryUserNotFoundException.throwDefaultMessage(id);
+        }
     }
 
     /**
@@ -100,9 +102,10 @@ public class CategoryUserService {
      * @throws CategoryUserNotFoundException Se a categoria de usuário não for encontrada.
      */
     public CategoryUser update(Long id, @Valid CategoryUserUpdateDTO categoryUserUpdateDTO) {
-        CategoryUser categoryUser = this.categoryUserRepository.findById(id)
-                .orElseThrow(() -> new CategoryUserNotFoundException("User category with the ID " + id + " was not found.",
-                        HttpStatus.NOT_FOUND));
+        CategoryUser categoryUser = this.categoryUserRepository.findById(id).orElse(null);
+        if (categoryUser == null){
+            CategoryUserNotFoundException.throwDefaultMessage(id);
+        }
         CategoryUser categoryUserUpdatedFields = CategoryUserMapper.toEntityUpdate(
                 categoryUserUpdateDTO,
                 categoryUser
@@ -117,9 +120,10 @@ public class CategoryUserService {
      * @throws CategoryUserNotFoundException Se a categoria de usuário não for encontrada.
      */
     public void delete(Long id) {
-        CategoryUser categoryUser = this.categoryUserRepository.findById(id)
-                .orElseThrow(() -> new CategoryUserNotFoundException("User category with the ID " + id + " was not found.",
-                        HttpStatus.NOT_FOUND));
-        this.categoryUserRepository.delete(categoryUser);
+        CategoryUser categoryUser = this.categoryUserRepository.findById(id).orElse(null);
+        this.throwExceptionIfCategoryUserNotFound(id, categoryUser);
+        if(categoryUser != null){
+            this.categoryUserRepository.delete(categoryUser);
+        }
     }
 }
