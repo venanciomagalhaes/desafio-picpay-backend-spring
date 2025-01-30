@@ -23,6 +23,19 @@ services:
     networks:
       - desafio_picpay_network
 
+  mysql-test:
+    image: mysql:latest
+    restart: always
+    environment:
+      MYSQL_DATABASE: desafio_picpay_simplificado_test
+      MYSQL_USER: venancio_test
+      MYSQL_PASSWORD: senha_qualquer_test
+      MYSQL_ROOT_PASSWORD: senha_qualquer_root_test
+    ports:
+      - "1225:3306"
+    networks:
+      - desafio_picpay_network
+
 networks:
   desafio_picpay_network:
     driver: bridge
