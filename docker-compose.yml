@@ -1,14 +1,6 @@
 version: '3.8'
 
 services:
-  app:
-    build: .
-    ports:
-      - "9123:8080" #roda na porta 9123 para externo e o mysql na 1224
-    depends_on:
-      - mysql
-    networks:
-      - desafio_picpay_network
 
   mysql:
     image: mysql:latest
@@ -33,6 +25,16 @@ services:
       MYSQL_ROOT_PASSWORD: senha_qualquer_root_test
     ports:
       - "1225:3306"
+    networks:
+      - desafio_picpay_network
+
+  app:
+    build: .
+    ports:
+      - "9123:8080" #roda na porta 9123 para externo e o mysql na 1224
+    depends_on:
+      - mysql
+      - mysql-test
     networks:
       - desafio_picpay_network
 
