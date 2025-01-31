@@ -99,7 +99,7 @@ public class UserService {
         User user = UserMapper.toEntityStore(userStoreDTO, categoryUser);
         Wallet wallet = this.walletService.createABlankWallet(user);
         user.setWallet(wallet);
-        return this.userRepository.save(user);
+        return this.userRepository.saveAndFlush(user);
     }
 
     /**
@@ -174,7 +174,7 @@ public class UserService {
                 categoryUser
         );
 
-        return this.userRepository.save(userUpdatedFields);
+        return this.userRepository.saveAndFlush(userUpdatedFields);
     }
 
     /**

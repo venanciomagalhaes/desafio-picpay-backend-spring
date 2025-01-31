@@ -39,9 +39,6 @@ public class Wallet implements Serializable {
     @Column(nullable = false, name = "updated_at")
     private LocalDateTime updatedAt;
 
-    /**
-     * Define os valores de `createdAt` e `updatedAt` antes de persistir o objeto.
-     */
     @PrePersist
     public void prePersist() {
         LocalDateTime now = LocalDateTime.now();
@@ -49,9 +46,6 @@ public class Wallet implements Serializable {
         this.updatedAt = now;
     }
 
-    /**
-     * Atualiza o valor de `updatedAt` antes de atualizar o objeto.
-     */
     @PreUpdate
     public void preUpdate() {
         this.updatedAt = LocalDateTime.now();
