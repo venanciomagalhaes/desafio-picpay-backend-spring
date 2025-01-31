@@ -20,7 +20,7 @@ Este projeto é uma **API REST** desenvolvida com **Spring Boot** para simular f
 
 ---
 
-## Endpoints da API
+## Endpoints da API (http://localhost:9123/)
 
 A documentação Swagger está disponível nas URLs: `/swagger-ui/index.html#` e `/v3/api-docs`.
 
@@ -52,12 +52,12 @@ A documentação Swagger está disponível nas URLs: `/swagger-ui/index.html#` e
 
 1. Clone o repositório:
    ```bash
-   git clone https://github.com/seu-usuario/desafio-picpay.git
+   git clone https://github.com/venanciomagalhaes/desafio-picpay-backend-spring.git
    ```
 
 2. Entre na pasta do projeto:
    ```bash
-   cd desafio-picpay
+   cd desafio-picpay-backend-spring
    ```
 
 3. Compile e execute a aplicação com Docker:
@@ -68,5 +68,3 @@ A documentação Swagger está disponível nas URLs: `/swagger-ui/index.html#` e
 Os serviços MySQL para produção e teste estarão disponíveis em `localhost:1224` e `localhost:1225`, respectivamente.
 
 ---
-# desafio-picpay-backend-spring
-# desafio-picpay-backend-spring
