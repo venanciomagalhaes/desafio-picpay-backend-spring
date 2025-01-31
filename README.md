@@ -52,12 +52,12 @@ A documentação Swagger está disponível nas URLs: `/swagger-ui/index.html#` e
 
 1. Clone o repositório:
    ```bash
-   git clone https://github.com/seu-usuario/desafio-picpay.git
+   git clone https://github.com/venanciomagalhaes/desafio-picpay-backend-spring.git
    ```
 
 2. Entre na pasta do projeto:
    ```bash
-   cd desafio-picpay
+   cd desafio-picpay-backend-spring
    ```
 
 3. Compile e execute a aplicação com Docker:
