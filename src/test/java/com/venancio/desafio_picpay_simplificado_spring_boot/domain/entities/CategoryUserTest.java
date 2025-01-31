@@ -30,7 +30,7 @@ class CategoryUserTest {
         categoryUser.prePersist();
         LocalDateTime firstUpdate = categoryUser.getUpdatedAt();
 
-        Thread.sleep(10);
+        Thread.sleep(100);
         categoryUser.preUpdate();
 
         assertTrue(categoryUser.getUpdatedAt().isAfter(firstUpdate));
