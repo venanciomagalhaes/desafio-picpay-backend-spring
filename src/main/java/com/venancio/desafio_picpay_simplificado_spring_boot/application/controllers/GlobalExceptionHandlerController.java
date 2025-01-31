@@ -10,6 +10,7 @@ import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.servlet.resource.NoResourceFoundException;
 
 import java.util.List;
 import java.util.Map;
@@ -17,7 +18,7 @@ import java.util.Map;
 /**
  * Classe de tratamento global de exceções para a aplicação.
  *
- * O {@link  GlobalExceptionHandlerController} captura e lida com exceções que ocorrem em toda a aplicação.
+ * O {@link GlobalExceptionHandlerController} captura e lida com exceções que ocorrem em toda a aplicação.
  * Ele utiliza a anotação {@link ControllerAdvice} para fornecer tratamento centralizado de exceções para
  * todas as camadas da aplicação. Cada método de tratamento de exceção retorna uma resposta personalizada
  * com base no tipo de erro ocorrido.
@@ -27,6 +28,7 @@ import java.util.Map;
  *     <li>{@link MethodArgumentNotValidException} - Falha na validação de dados de entrada.</li>
  *     <li>{@link BusinessException} - Erros relacionados à lógica de negócio da aplicação.</li>
  *     <li>{@link HttpMessageNotReadableException} - Erros ao tentar ler ou desserializar o corpo da requisição.</li>
+ *     <li>{@link NoResourceFoundException} - Quando um recurso solicitado não é encontrado.</li>
  *     <li>{@link Exception} - Exceções genéricas ou não tratadas explicitamente.</li>
  * </ul>
  *
@@ -98,6 +100,23 @@ public class GlobalExceptionHandlerController {
     }
 
     /**
+     * Captura exceções de recurso não encontrado (404).
+     *
+     * Este método é acionado quando um recurso solicitado não é encontrado,
+     * retornando uma resposta com status HTTP {@code 404 Not Found}.
+     *
+     * @param ex A exceção {@code NoResourceFoundException} que indica que um recurso não foi encontrado.
+     * @return A resposta {@code ResponseEntity} com a mensagem de erro e o status HTTP {@code 404}.
+     */
+    @ExceptionHandler(NoResourceFoundException.class)
+    public ResponseEntity<Map<String, Object>> handleNotFoundException(NoResourceFoundException ex) {
+        return new ResponseBuilder(
+                "Resource not found.",
+                HttpStatus.NOT_FOUND
+        ).build();
+    }
+
+    /**
      * Captura exceções genéricas.
      *
      * Este método é acionado quando ocorre uma exceção não específica, garantindo que qualquer erro inesperado seja tratado.
@@ -109,7 +128,7 @@ public class GlobalExceptionHandlerController {
     @ExceptionHandler(Exception.class)
     public ResponseEntity<Map<String, Object>> handleGenericException(Exception ex) {
         return new ResponseBuilder(
-               "Internal Server error",
+                "Internal Server error",
                 HttpStatus.INTERNAL_SERVER_ERROR
         ).build();
     }
