@@ -20,7 +20,7 @@ Este projeto é uma **API REST** desenvolvida com **Spring Boot** para simular f
 
 ---
 
-## Endpoints da API
+## Endpoints da API (http://localhost:9123/)
 
 A documentação Swagger está disponível nas URLs: `/swagger-ui/index.html#` e `/v3/api-docs`.
 
