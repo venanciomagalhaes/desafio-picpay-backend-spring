@@ -9,13 +9,11 @@ Este projeto é uma **API REST** desenvolvida com **Spring Boot** para simular f
 - **Spring Data JPA**: Abstração para manipulação de dados em bancos relacionais.
 - **Spring Boot Starter Web**: Facilita a criação de APIs RESTful com Spring.
 - **Spring Boot Starter Validation**: Suporte para validação de dados de entrada usando **Bean Validation**.
-- **Flyway**: Ferramenta para migração e versionamento de banco de dados.
 - **MySQL Connector/J**: Driver JDBC para conexão com o banco de dados MySQL.
 - **Spring Boot Starter Test**: Pacote para criação e execução de testes automatizados.
 - **Spring Boot Starter HATEOAS**: Suporte para construção de APIs RESTful seguindo os princípios de HATEOAS.
 - **Lombok**: Reduz o código boilerplate com anotações automáticas para getters, setters e construtores.
 - **Spring Boot Starter Mail**: Suporte para envio de emails via SMTP.
-- **Spring Boot Docker Compose**: Integração com containers Docker para ambientes consistentes.
 - **Springdoc OpenAPI Starter WebMVC UI**: Geração e visualização da documentação da API usando OpenAPI.
 
 ---
