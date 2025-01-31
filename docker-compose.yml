@@ -14,6 +14,10 @@ services:
       - "1224:3306"
     networks:
       - desafio_picpay_network
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "--silent"]
+      interval: 5s
+      retries: 5
 
   mysql-test:
     image: mysql:latest
@@ -27,14 +31,20 @@ services:
       - "1225:3306"
     networks:
       - desafio_picpay_network
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "--silent"]
+      interval: 5s
+      retries: 5
 
   app:
     build: .
     ports:
-      - "9123:8080" #roda na porta 9123 para externo e o mysql na 1224
+      - "9123:8080"
     depends_on:
-      - mysql
-      - mysql-test
+      mysql:
+        condition: service_healthy
+      mysql-test:
+        condition: service_healthy
     networks:
       - desafio_picpay_network
 
