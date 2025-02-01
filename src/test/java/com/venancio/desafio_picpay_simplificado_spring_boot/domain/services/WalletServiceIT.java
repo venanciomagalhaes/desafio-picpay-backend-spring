@@ -7,7 +7,6 @@ import com.venancio.desafio_picpay_simplificado_spring_boot.domain.enums.Categor
 import com.venancio.desafio_picpay_simplificado_spring_boot.domain.repositories.CategoryUserRepository;
 import com.venancio.desafio_picpay_simplificado_spring_boot.domain.repositories.UserRepository;
 import com.venancio.desafio_picpay_simplificado_spring_boot.domain.repositories.WalletRepository;
-import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -15,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 

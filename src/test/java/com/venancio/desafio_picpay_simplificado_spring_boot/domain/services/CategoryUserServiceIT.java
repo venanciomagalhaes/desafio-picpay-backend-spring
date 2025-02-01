@@ -7,7 +7,7 @@ import com.venancio.desafio_picpay_simplificado_spring_boot.domain.enums.Categor
 import com.venancio.desafio_picpay_simplificado_spring_boot.domain.exceptions.category_user.CategoryUserAlreadyExistsException;
 import com.venancio.desafio_picpay_simplificado_spring_boot.domain.exceptions.category_user.CategoryUserNotFoundException;
 import com.venancio.desafio_picpay_simplificado_spring_boot.domain.repositories.CategoryUserRepository;
-import jakarta.transaction.Transactional;
+import org.springframework.transaction.annotation.Transactional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

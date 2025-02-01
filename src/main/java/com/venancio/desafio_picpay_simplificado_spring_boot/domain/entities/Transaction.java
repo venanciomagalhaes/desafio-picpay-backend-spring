@@ -38,6 +38,7 @@ public class Transaction implements Serializable {
     private BigDecimal value;
 
     @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
     private TransferStatus status;
 
     @Column(nullable = false, name = "created_at", updatable = false)

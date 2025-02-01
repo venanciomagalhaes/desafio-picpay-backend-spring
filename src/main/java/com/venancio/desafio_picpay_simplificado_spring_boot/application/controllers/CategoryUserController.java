@@ -9,7 +9,7 @@ import com.venancio.desafio_picpay_simplificado_spring_boot.domain.entities.Cate
 import com.venancio.desafio_picpay_simplificado_spring_boot.domain.services.CategoryUserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.transaction.Transactional;
+import org.springframework.transaction.annotation.Transactional;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;

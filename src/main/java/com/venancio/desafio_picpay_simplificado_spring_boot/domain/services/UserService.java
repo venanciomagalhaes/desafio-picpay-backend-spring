@@ -12,7 +12,7 @@ import com.venancio.desafio_picpay_simplificado_spring_boot.domain.exceptions.us
 import com.venancio.desafio_picpay_simplificado_spring_boot.domain.exceptions.user.UserNotFoundException;
 import com.venancio.desafio_picpay_simplificado_spring_boot.domain.repositories.CategoryUserRepository;
 import com.venancio.desafio_picpay_simplificado_spring_boot.domain.repositories.UserRepository;
-import jakarta.transaction.Transactional;
+import org.springframework.transaction.annotation.Transactional;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
