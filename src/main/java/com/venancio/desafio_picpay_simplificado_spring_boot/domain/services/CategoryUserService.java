@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -69,6 +70,7 @@ public class CategoryUserService {
      * @return A categoria de usuário criada.
      * @throws CategoryUserAlreadyExistsException Se a categoria de usuário já existir.
      */
+    @Transactional
     public CategoryUser store(@Valid CategoryUserStoreDTO dto) {
         this.throwExceptionIfCategoryUserAlreadyExist(dto);
         return this.categoryUserRepository.saveAndFlush(CategoryUserMapper.toEntityStore(dto));
@@ -101,6 +103,7 @@ public class CategoryUserService {
      * @return A categoria de usuário atualizada.
      * @throws CategoryUserNotFoundException Se a categoria de usuário não for encontrada.
      */
+    @Transactional
     public CategoryUser update(Long id, @Valid CategoryUserUpdateDTO categoryUserUpdateDTO) {
         CategoryUser categoryUser = this.categoryUserRepository.findById(id).orElse(null);
         if (categoryUser == null){
@@ -119,6 +122,7 @@ public class CategoryUserService {
      * @param id O ID da categoria de usuário a ser excluída.
      * @throws CategoryUserNotFoundException Se a categoria de usuário não for encontrada.
      */
+    @Transactional
     public void delete(Long id) {
         CategoryUser categoryUser = this.categoryUserRepository.findById(id).orElse(null);
         this.throwExceptionIfCategoryUserNotFound(id, categoryUser);

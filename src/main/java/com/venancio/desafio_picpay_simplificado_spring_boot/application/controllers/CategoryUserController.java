@@ -72,7 +72,6 @@ public class CategoryUserController {
     }
 
     @PostMapping()
-    @Transactional
     @Operation(
             summary = "Criar uma nova categoria de usuário",
             description = "Cria uma nova categoria de usuário e retorna seus detalhes"
@@ -89,7 +88,6 @@ public class CategoryUserController {
     }
 
     @PutMapping(path = "/{id}")
-    @Transactional
     @Operation(
             summary = "Atualizar uma categoria de usuário",
             description = "Atualiza os detalhes de uma categoria de usuário pelo ID"
@@ -108,7 +106,6 @@ public class CategoryUserController {
     }
 
     @DeleteMapping(path = "/{id}")
-    @Transactional
     @Operation(
             summary = "Excluir uma categoria de usuário",
             description = "Exclui uma categoria de usuário pelo ID"
