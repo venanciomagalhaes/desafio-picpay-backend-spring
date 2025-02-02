@@ -73,7 +73,7 @@ public class CategoryUserService {
     @Transactional
     public CategoryUser store(@Valid CategoryUserStoreDTO dto) {
         this.throwExceptionIfCategoryUserAlreadyExist(dto);
-        return this.categoryUserRepository.saveAndFlush(CategoryUserMapper.toEntityStore(dto));
+        return this.categoryUserRepository.save(CategoryUserMapper.toEntityStore(dto));
     }
 
     /**
@@ -113,7 +113,7 @@ public class CategoryUserService {
                 categoryUserUpdateDTO,
                 categoryUser
         );
-        return this.categoryUserRepository.saveAndFlush(categoryUserUpdatedFields);
+        return this.categoryUserRepository.save(categoryUserUpdatedFields);
     }
 
     /**

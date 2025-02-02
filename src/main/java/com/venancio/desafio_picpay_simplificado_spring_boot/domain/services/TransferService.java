@@ -47,7 +47,7 @@ public class TransferService {
      * @param utilDeviToolsClient Cliente HTTP para chamadas externas.
      */
     @Autowired
-    public TransferService(UserRepository userRepository, TransactionRepository transactionRepository, UtilDeviToolsClient utilDeviToolsClient, EmailNotification emailNotification) {
+    public TransferService(UserRepository userRepository, TransactionRepository transactionRepository, UtilDeviToolsClient utilDeviToolsClient) {
         this.userRepository = userRepository;
         this.transactionRepository = transactionRepository;
         this.utilDeviToolsClient = utilDeviToolsClient;
@@ -93,8 +93,8 @@ public class TransferService {
         BigDecimal newPayerWalletBalance = payer.getWallet().getBalance().subtract(transactionStoreDTO.getValue());
         payer.getWallet().setBalance(newPayerWalletBalance);
 
-        payee = this.userRepository.saveAndFlush(payee);
-        payer = this.userRepository.saveAndFlush(payer);
+        payee = this.userRepository.save(payee);
+        payer = this.userRepository.save(payer);
 
         transaction.setStatus(TransferStatus.finalized);
         this.transactionRepository.save(transaction);

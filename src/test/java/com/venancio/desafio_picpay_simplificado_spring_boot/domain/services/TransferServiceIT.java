@@ -200,8 +200,7 @@ class TransferServiceIT {
         TransferService transferService = new TransferService(
                 userRepository,
                 transactionRepository,
-                utilDeviToolsClientMock,
-                emailNotification
+                utilDeviToolsClientMock
         );
 
         TransactionStoreDTO transactionDTO = new TransactionStoreDTO(
@@ -231,8 +230,7 @@ class TransferServiceIT {
         TransferService transferService = new TransferService(
                 userRepository,
                 transactionRepository,
-                utilDeviToolsClientMock,
-                emailNotification
+                utilDeviToolsClientMock
         );
 
         TransactionStoreDTO transactionDTO = new TransactionStoreDTO(
