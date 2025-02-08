@@ -5,13 +5,12 @@ import com.venancio.desafio_picpay_simplificado_spring_boot.application.dtos.tra
 import com.venancio.desafio_picpay_simplificado_spring_boot.application.mappers.TransactionMapper;
 import com.venancio.desafio_picpay_simplificado_spring_boot.application.utils.response.ResponseBuilder;
 import com.venancio.desafio_picpay_simplificado_spring_boot.domain.entities.Transaction;
-import com.venancio.desafio_picpay_simplificado_spring_boot.domain.services.TransferService;
+import com.venancio.desafio_picpay_simplificado_spring_boot.domain.services.Transfer.TransferService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;

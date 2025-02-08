@@ -17,6 +17,10 @@ import com.venancio.desafio_picpay_simplificado_spring_boot.domain.repositories.
 import com.venancio.desafio_picpay_simplificado_spring_boot.domain.repositories.TransactionRepository;
 import com.venancio.desafio_picpay_simplificado_spring_boot.application.dtos.transaction.TransactionStoreDTO;
 import com.venancio.desafio_picpay_simplificado_spring_boot.domain.repositories.WalletRepository;
+import com.venancio.desafio_picpay_simplificado_spring_boot.domain.services.Transfer.AuthorizationService;
+import com.venancio.desafio_picpay_simplificado_spring_boot.domain.services.Transfer.NotificationService;
+import com.venancio.desafio_picpay_simplificado_spring_boot.domain.services.Transfer.TransferService;
+import com.venancio.desafio_picpay_simplificado_spring_boot.domain.services.Transfer.TransferValidator;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.DisplayName;
@@ -61,6 +65,9 @@ class TransferServiceIT {
     @Mock
     private UtilDeviToolsClient utilDeviToolsClientMock;
 
+    @Autowired
+    private TransferValidator transferValidator;
+
     private User payer;
     private User payee;
 
@@ -104,7 +111,37 @@ class TransferServiceIT {
                 this.payee.getId().toString()
         );
 
-        Transaction transaction = this.transferService.transfer(transactionDTO);
+        when(utilDeviToolsClientMock.get("/v2/authorize", AuthorizationDTO.class)).thenReturn(
+              new AuthorizationDTO(
+                      "success",
+                      new AuthorizationDTO.Data(
+                              true
+                      )
+              )
+        );
+
+        when(utilDeviToolsClientMock.post("/v1/notify", null, null)).thenReturn(
+                true
+        );
+
+
+        AuthorizationService authorizationService = new AuthorizationService(
+                utilDeviToolsClientMock
+        );
+
+        NotificationService notificationService = new NotificationService(
+                utilDeviToolsClientMock
+        );
+
+        TransferService transferService = new TransferService(
+                transferValidator,
+                userRepository,
+                transactionRepository,
+                authorizationService,
+                notificationService
+        );
+
+        Transaction transaction = transferService.transfer(transactionDTO);
 
         assertNotNull(transaction);
         assertEquals(TransferStatus.finalized, transaction.getStatus());
@@ -207,6 +244,7 @@ class TransferServiceIT {
         );
 
         TransferService transferService = new TransferService(
+                transferValidator,
                 userRepository,
                 transactionRepository,
                 authorizationService,
@@ -246,6 +284,7 @@ class TransferServiceIT {
         );
 
         TransferService transferService = new TransferService(
+                transferValidator,
                 userRepository,
                 transactionRepository,
                 authorizationService,

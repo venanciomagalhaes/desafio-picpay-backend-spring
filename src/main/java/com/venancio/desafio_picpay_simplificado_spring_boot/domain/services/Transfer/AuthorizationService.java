@@ -1,8 +1,10 @@
-package com.venancio.desafio_picpay_simplificado_spring_boot.domain.services;
+package com.venancio.desafio_picpay_simplificado_spring_boot.domain.services.Transfer;
 
 import com.venancio.desafio_picpay_simplificado_spring_boot.application.dtos.transaction.AuthorizationDTO;
 import com.venancio.desafio_picpay_simplificado_spring_boot.application.utils.http_client.HttpClient;
 import com.venancio.desafio_picpay_simplificado_spring_boot.domain.exceptions.transfer.UnauthorizedTransferException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -10,8 +12,8 @@ import org.springframework.stereotype.Service;
 public class AuthorizationService {
 
     private static final int MAX_ATTEMPTS = 5;
-    private static final int BACKOFF_ONE_TENTH_SECOND = 100;
-
+    private static int BACKOFF_ONE_TENTH_SECOND = 100;
+    private static final Logger logger = LoggerFactory.getLogger(AuthorizationService.class);
     private final HttpClient utilDeviToolsClient;
 
     @Autowired
@@ -31,9 +33,11 @@ public class AuthorizationService {
             try {
                 authorizationDTO = this.utilDeviToolsClient.get("/v2/authorize", AuthorizationDTO.class);
                 if (authorizationDTO != null && authorizationDTO.getData().isAuthorized()) {
+                    logger.info("Autorizada a transferência");
                     break;
                 }
             } catch (RuntimeException ignored) {
+                logger.info("Não autorizada a transferência");
             } finally {
                 attempt++;
                 addDelay(attempt);
