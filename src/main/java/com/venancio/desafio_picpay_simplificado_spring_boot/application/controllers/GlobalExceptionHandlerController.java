@@ -3,15 +3,19 @@ package com.venancio.desafio_picpay_simplificado_spring_boot.application.control
 import com.venancio.desafio_picpay_simplificado_spring_boot.application.utils.response.ResponseBuilder;
 import com.venancio.desafio_picpay_simplificado_spring_boot.domain.exceptions.BusinessException;
 import com.venancio.desafio_picpay_simplificado_spring_boot.domain.services.GlobalExceptionHandlerService;
+import jakarta.validation.ConstraintViolationException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.servlet.resource.NoResourceFoundException;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -128,8 +132,19 @@ public class GlobalExceptionHandlerController {
     @ExceptionHandler(Exception.class)
     public ResponseEntity<Map<String, Object>> handleGenericException(Exception ex) {
         return new ResponseBuilder(
-                ex.toString(),
+                "Internal server error",
                 HttpStatus.INTERNAL_SERVER_ERROR
         ).build();
+    }
+
+    @ExceptionHandler(ConstraintViolationException.class)
+    public ResponseEntity<Map<String, Object>> handleConstraintViolationException(ConstraintViolationException ex) {
+        List<Map<String, String>> errors = this.errorHandlerService.handleValidationConstraintsExceptions(ex);
+        return new ResponseBuilder(
+                "The fields sent are invalid.",
+                HttpStatus.UNPROCESSABLE_ENTITY
+        )
+        .setValidationErrors(errors)
+        .build();
     }
 }

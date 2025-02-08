@@ -1,5 +1,6 @@
 package com.venancio.desafio_picpay_simplificado_spring_boot.domain.services;
 
+import jakarta.validation.ConstraintViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -36,4 +37,19 @@ public class GlobalExceptionHandlerService {
         });
         return errors;
     }
+
+    public List<Map<String, String>> handleValidationConstraintsExceptions(ConstraintViolationException exception) {
+        List<Map<String, String>> errors = new ArrayList<>();
+        String input = exception.getMessage();
+        String[] parts = input.split(":");
+        Map<String, String> errorMap = new HashMap<>();
+        String key = parts[0].trim().split("\\.")[1];
+        String value = parts[1].trim();
+        errorMap.put("field", key);
+        errorMap.put("instructions", value);
+        errors.add(errorMap);
+        return errors;
+    }
+
+
 }
