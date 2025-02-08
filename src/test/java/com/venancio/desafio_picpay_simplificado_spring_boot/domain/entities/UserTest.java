@@ -6,6 +6,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import java.time.LocalDateTime;
 import java.util.HashSet;
+import java.util.UUID;
 
 class UserTest {
 
@@ -44,7 +45,8 @@ class UserTest {
 
     @Test
     void testSetAndGetMethods() {
-        user.setId(1L);
+        UUID random = UUID.randomUUID();
+        user.setId(random);
         user.setName("Maria Oliveira");
         user.setCpfCnpj("98765432100");
         user.setEmail("maria@email.com");
@@ -53,7 +55,7 @@ class UserTest {
         user.setPayerTransactions(new HashSet<>());
         user.setPayeeTransactions(new HashSet<>());
 
-        assertEquals(1L, user.getId());
+        assertEquals(random, user.getId());
         assertEquals("Maria Oliveira", user.getName());
         assertEquals("98765432100", user.getCpfCnpj());
         assertEquals("maria@email.com", user.getEmail());

@@ -20,6 +20,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.UUID;
 
 /**
  * Serviço de gerenciamento de usuários no sistema.
@@ -64,7 +65,7 @@ public class UserService {
      * @return Usuário com o ID fornecido.
      * @throws UserNotFoundException Se o usuário não for encontrado.
      */
-    public User show(Long id) {
+    public User show(UUID id) {
         User user = this.userRepository.findById(id).orElse(null);
         this.throwExceptionIfUserNotFound(user, id);
         return user;
@@ -77,7 +78,7 @@ public class UserService {
      * @param id   O ID do usuário.
      * @throws UserNotFoundException Se o usuário não for encontrado.
      */
-    private void throwExceptionIfUserNotFound(User user, Long id){
+    private void throwExceptionIfUserNotFound(User user, UUID id){
         if (user == null){
            UserNotFoundException.throwDefaultMessage(id);
         }
@@ -94,9 +95,10 @@ public class UserService {
     @Transactional
     public User store(@Valid UserStoreDTO userStoreDTO) {
         this.throwExceptionIfUserAlreadyExist(userStoreDTO);
-        CategoryUser categoryUser = this.categoryUserRepository.findById(userStoreDTO.category_id()).orElse(null);
-        this.throwExceptionIfUserCategoryNotFound(categoryUser, userStoreDTO.category_id());
+        CategoryUser categoryUser = this.categoryUserRepository.findById(UUID.fromString(userStoreDTO.category_id())).orElse(null);
+        this.throwExceptionIfUserCategoryNotFound(categoryUser, UUID.fromString(userStoreDTO.category_id()));
         User user = UserMapper.toEntityStore(userStoreDTO, categoryUser);
+        this.userRepository.save(user);
         Wallet wallet = this.walletService.createABlankWallet(user);
         user.setWallet(wallet);
         return this.userRepository.save(user);
@@ -109,7 +111,7 @@ public class UserService {
      * @param id O ID da categoria.
      * @throws CategoryUserNotFoundException Se a categoria do usuário não for encontrada.
      */
-    private void throwExceptionIfUserCategoryNotFound(CategoryUser categoryUser, Long id){
+    private void throwExceptionIfUserCategoryNotFound(CategoryUser categoryUser, UUID id){
         if (categoryUser == null){
             CategoryUserNotFoundException.throwDefaultMessage(id);
         }
@@ -138,7 +140,7 @@ public class UserService {
      * @param id            ID do usuário a ser atualizado.
      * @throws EmailInUseForAnotherUser Se o email já estiver em uso por outro usuário.
      */
-    private void throwExceptionIfEmailInUseForAnotherUser(@Valid UserUpdateDTO userUpdateDTO, Long id){
+    private void throwExceptionIfEmailInUseForAnotherUser(@Valid UserUpdateDTO userUpdateDTO, UUID id){
         List<User> userExist = this.userRepository.existsByEmailInAnotherUser(
                 userUpdateDTO.email(),
                 id
@@ -159,12 +161,12 @@ public class UserService {
      * @throws EmailInUseForAnotherUser Se o email fornecido já estiver em uso por outro usuário.
      */
     @Transactional
-    public User update(Long id, @Valid UserUpdateDTO userUpdateDTO) {
+    public User update(UUID id, @Valid UserUpdateDTO userUpdateDTO) {
         User user = this.userRepository.findById(id).orElse(null);
         this.throwExceptionIfUserNotFound(user, id);
 
-        CategoryUser categoryUser =  this.categoryUserRepository.findById(userUpdateDTO.category_id()).orElse(null);
-        this.throwExceptionIfUserCategoryNotFound(categoryUser, userUpdateDTO.category_id());
+        CategoryUser categoryUser =  this.categoryUserRepository.findById(UUID.fromString(userUpdateDTO.category_id())).orElse(null);
+        this.throwExceptionIfUserCategoryNotFound(categoryUser, UUID.fromString(userUpdateDTO.category_id()));
 
         this.throwExceptionIfEmailInUseForAnotherUser(userUpdateDTO, id);
 
@@ -184,7 +186,7 @@ public class UserService {
      * @throws UserNotFoundException Se o usuário não for encontrado.
      */
     @Transactional
-    public void delete(Long id) {
+    public void delete(UUID id) {
         User user = this.userRepository.findById(id).orElse(null);
         this.throwExceptionIfUserNotFound(user, id);
         this.userRepository.delete(user);

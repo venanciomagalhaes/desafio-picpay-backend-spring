@@ -7,6 +7,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import java.time.LocalDateTime;
 import java.util.HashSet;
+import java.util.UUID;
 
 class CategoryUserTest {
 
@@ -45,11 +46,12 @@ class CategoryUserTest {
 
     @Test
     void testSetAndGetMethods() {
-        categoryUser.setId(1L);
+        UUID random = UUID.randomUUID();
+        categoryUser.setId(random);
         categoryUser.setName(CategoryUserNameEnum.common);
         categoryUser.setUsers(new HashSet<>());
 
-        assertEquals(1L, categoryUser.getId());
+        assertEquals(random, categoryUser.getId());
         assertEquals(CategoryUserNameEnum.common, categoryUser.getName());
         assertNotNull(categoryUser.getUsers());
     }

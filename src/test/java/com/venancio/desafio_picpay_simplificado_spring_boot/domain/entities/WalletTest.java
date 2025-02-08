@@ -7,6 +7,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 class WalletTest {
 
@@ -17,7 +18,7 @@ class WalletTest {
     void setUp() {
         user = new User();
         wallet = new Wallet(
-                1L,
+                UUID.randomUUID(),
                 BigDecimal.ZERO,
                 user,
                 LocalDateTime.now(),
@@ -45,11 +46,12 @@ class WalletTest {
 
     @Test
     void testSetAndGetMethods() {
-        wallet.setId(2L);
+        UUID random = UUID.randomUUID();
+        wallet.setId(random);
         wallet.setBalance(BigDecimal.valueOf(500.0));
         wallet.setUser(new User());
 
-        assertEquals(2L, wallet.getId());
+        assertEquals(random, wallet.getId());
         assertEquals(BigDecimal.valueOf(500.0), wallet.getBalance());
         assertNotNull(wallet.getUser());
     }

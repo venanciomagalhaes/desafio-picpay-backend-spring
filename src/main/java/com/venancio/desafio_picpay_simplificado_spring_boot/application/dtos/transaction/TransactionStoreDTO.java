@@ -11,6 +11,7 @@ import lombok.Setter;
 import org.springframework.hateoas.EntityModel;
 
 import java.math.BigDecimal;
+import java.util.UUID;
 
 @Getter
 @Setter
@@ -25,11 +26,13 @@ public class TransactionStoreDTO {
     @NotNull
     @UserExist
     @CanSendTransfer
-    private Long payer;
+    @org.hibernate.validator.constraints.UUID(message = "The ID must be a valid UUID")
+    private String payer;
 
     @NotNull
     @UserExist
-    private Long payee;
+    @org.hibernate.validator.constraints.UUID(message = "The ID must be a valid UUID")
+    private String payee;
 
 }
 

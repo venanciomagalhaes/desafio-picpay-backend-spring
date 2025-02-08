@@ -8,7 +8,9 @@ import jakarta.validation.ConstraintValidatorContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 
-public class UserExistValidator implements ConstraintValidator<UserExist, Long> {
+import java.util.UUID;
+
+public class UserExistValidator implements ConstraintValidator<UserExist, String> {
 
     private final UserRepository userRepository;
 
@@ -18,11 +20,11 @@ public class UserExistValidator implements ConstraintValidator<UserExist, Long> 
     }
 
     @Override
-    public boolean isValid(Long value, ConstraintValidatorContext context) {
+    public boolean isValid(String value, ConstraintValidatorContext context) {
         try {
-            User user = this.userRepository.findById(value).orElse(null);
+            User user = this.userRepository.findById(UUID.fromString(value)).orElse(null);
             if (user == null){
-                UserNotFoundException.throwDefaultMessage(value);
+                UserNotFoundException.throwDefaultMessage(UUID.fromString(value));
             }
             return true;
         } catch (Exception e) {

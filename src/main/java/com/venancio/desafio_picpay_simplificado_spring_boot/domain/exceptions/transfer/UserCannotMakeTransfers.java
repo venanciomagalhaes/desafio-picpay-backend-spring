@@ -4,6 +4,8 @@ import com.venancio.desafio_picpay_simplificado_spring_boot.domain.exceptions.Bu
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
+import java.util.UUID;
+
 @ResponseStatus(HttpStatus.BAD_REQUEST)
 
 public class UserCannotMakeTransfers extends BusinessException {
@@ -12,9 +14,9 @@ public class UserCannotMakeTransfers extends BusinessException {
         super(message, httpStatus);
     }
 
-    public static void throwDefaultMessage(Long id) {
+    public static void throwDefaultMessage(UUID id) {
         throw new UserCannotMakeTransfers(
-                String.format("User with ID %d cannot make transfers.", id),
+                String.format("User with ID %s cannot make transfers.", id.toString()),
                 HttpStatus.BAD_REQUEST
         );
     }

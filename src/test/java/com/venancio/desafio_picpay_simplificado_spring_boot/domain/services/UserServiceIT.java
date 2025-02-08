@@ -20,6 +20,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.test.context.ActiveProfiles;
 
 import java.util.Optional;
+import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -54,7 +55,7 @@ class UserServiceIT {
                 "12345678901",
                 "novo@email.com",
                 "password",
-                category.getId());
+                category.getId().toString());
         User user = userService.store(dto);
         assertNotNull(user.getId());
         assertEquals("Novo Usuário", user.getName());
@@ -81,7 +82,7 @@ class UserServiceIT {
     @Test
     @DisplayName("Deve lançar exceção ao buscar usuário inexistente")
     void shouldThrowExceptionWhenUserNotFound() {
-        assertThrows(UserNotFoundException.class, () -> userService.show(999L));
+        assertThrows(UserNotFoundException.class, () -> userService.show(UUID.randomUUID()));
     }
 
     @Test
@@ -99,7 +100,7 @@ class UserServiceIT {
                 "Usuário Atualizado",
                 "novo@email.com",
                 "passwordUpdated",
-                category.getId()
+                category.getId().toString()
         );
         User updatedUser = userService.update(user.getId(), dto);
         assertEquals("Usuário Atualizado", updatedUser.getName());

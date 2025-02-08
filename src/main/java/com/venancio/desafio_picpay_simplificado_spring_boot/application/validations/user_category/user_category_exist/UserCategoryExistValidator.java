@@ -7,8 +7,9 @@ import jakarta.validation.ConstraintValidatorContext;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.Optional;
+import java.util.UUID;
 
-public class UserCategoryExistValidator implements ConstraintValidator<UserCategoryExist, Long> {
+public class UserCategoryExistValidator implements ConstraintValidator<UserCategoryExist, String> {
 
     private final CategoryUserRepository categoryUserRepository;
 
@@ -18,12 +19,12 @@ public class UserCategoryExistValidator implements ConstraintValidator<UserCateg
     }
 
     @Override
-    public boolean isValid(Long value, ConstraintValidatorContext context) {
+    public boolean isValid(String value, ConstraintValidatorContext context) {
         try {
             if (value == null){
                 return true;
             }
-            Optional<CategoryUser> categoryUser = this.categoryUserRepository.findById(value);
+            Optional<CategoryUser> categoryUser = this.categoryUserRepository.findById(UUID.fromString(value));
             return categoryUser.isPresent();
         } catch (Exception e) {
             return false;

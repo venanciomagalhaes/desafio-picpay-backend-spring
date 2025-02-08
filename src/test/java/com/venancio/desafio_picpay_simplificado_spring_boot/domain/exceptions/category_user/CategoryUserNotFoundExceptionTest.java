@@ -5,6 +5,8 @@ import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 
+import java.util.UUID;
+
 
 class CategoryUserNotFoundExceptionTest {
 
@@ -19,9 +21,10 @@ class CategoryUserNotFoundExceptionTest {
 
     @Test
     void testThrowDefaultMessage() {
+        UUID random = UUID.randomUUID();
         Exception exception = assertThrows(CategoryUserNotFoundException.class, () ->
-                CategoryUserNotFoundException.throwDefaultMessage(1L));
+                CategoryUserNotFoundException.throwDefaultMessage(random));
 
-        assertEquals("User category with the ID 1 was not found.", exception.getMessage());
+        assertEquals("User category with the ID " + random +" was not found.", exception.getMessage());
     }
 }

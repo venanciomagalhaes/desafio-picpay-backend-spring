@@ -11,6 +11,7 @@ import lombok.Setter;
 import org.springframework.hateoas.EntityModel;
 
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
@@ -22,7 +23,7 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 @Setter
 public class CategoryUserDTO  extends EntityModel<CategoryUser> implements HateoasDTO<CategoryUserDTO>  {
 
-    private Long id;
+    private UUID id;
 
     private CategoryUserNameEnum name;
 
@@ -33,7 +34,7 @@ public class CategoryUserDTO  extends EntityModel<CategoryUser> implements Hateo
     @Override
     public CategoryUserDTO generateHateoas() {
         this.add(
-                linkTo(methodOn(CategoryUserController.class).show(this.getId())).withSelfRel()
+                linkTo(methodOn(CategoryUserController.class).show(String.valueOf(this.getId()))).withSelfRel()
         );
         this.add(
                 linkTo(methodOn(CategoryUserController.class).index(null)).withRel("index")
@@ -42,10 +43,10 @@ public class CategoryUserDTO  extends EntityModel<CategoryUser> implements Hateo
                 linkTo(methodOn(CategoryUserController.class).store(null)).withRel("store")
         );
         this.add(
-                linkTo(methodOn(CategoryUserController.class).update(this.getId(), null)).withRel("update")
+                linkTo(methodOn(CategoryUserController.class).update(String.valueOf(this.getId()), null)).withRel("update")
         );
         this.add(
-                linkTo(methodOn(CategoryUserController.class).delete(this.getId())).withRel("delete")
+                linkTo(methodOn(CategoryUserController.class).delete(String.valueOf(this.getId()))).withRel("delete")
         );
         return this;
     }

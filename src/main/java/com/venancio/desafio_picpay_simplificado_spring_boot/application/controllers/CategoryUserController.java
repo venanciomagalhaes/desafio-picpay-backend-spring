@@ -6,9 +6,11 @@ import com.venancio.desafio_picpay_simplificado_spring_boot.application.dtos.cat
 import com.venancio.desafio_picpay_simplificado_spring_boot.application.mappers.CategoryUserMapper;
 import com.venancio.desafio_picpay_simplificado_spring_boot.application.utils.response.ResponseBuilder;
 import com.venancio.desafio_picpay_simplificado_spring_boot.domain.entities.CategoryUser;
+import com.venancio.desafio_picpay_simplificado_spring_boot.domain.enums.Regex;
 import com.venancio.desafio_picpay_simplificado_spring_boot.domain.services.CategoryUserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.constraints.Pattern;
 import org.springframework.transaction.annotation.Transactional;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,10 +19,12 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/v1/categories-users")
@@ -28,6 +32,7 @@ import java.util.Map;
         name = "Categoria de usuários",
         description = "Endpoints para gerenciar categorias de usuários"
 )
+@Validated
 public class CategoryUserController {
 
     private final CategoryUserService categoryUserService;
@@ -60,8 +65,11 @@ public class CategoryUserController {
             summary = "Buscar uma categoria de usuário pelo ID",
             description = "Retorna os detalhes de uma categoria de usuário específico pelo ID"
     )
-    public ResponseEntity<Map<String, Object>> show(@PathVariable(name = "id") Long id) {
-        CategoryUser categoryUser = this.categoryUserService.show(id);
+    public ResponseEntity<Map<String, Object>> show(
+            @PathVariable(name = "id")
+            @Pattern(regexp = Regex.VALID_REGEX_TO_UUID, message = "The ID must be a valid UUID")
+            String id) {
+        CategoryUser categoryUser = this.categoryUserService.show(UUID.fromString(id));
         CategoryUserDTO categoryUserDTO = CategoryUserMapper.toDTO(categoryUser);
         return new ResponseBuilder(
                 "User category show successfully!",
@@ -93,9 +101,11 @@ public class CategoryUserController {
             description = "Atualiza os detalhes de uma categoria de usuário pelo ID"
     )
     public ResponseEntity<Map<String, Object>> update(
-            @PathVariable(name = "id") Long id,
+            @PathVariable(name = "id")
+            @Pattern(regexp = Regex.VALID_REGEX_TO_UUID, message = "The ID must be a valid UUID")
+            String id,
             @RequestBody @Valid CategoryUserUpdateDTO categoryUserUpdateDTO) {
-        CategoryUser categoryUserListDTO = this.categoryUserService.update(id, categoryUserUpdateDTO);
+        CategoryUser categoryUserListDTO = this.categoryUserService.update(UUID.fromString(id), categoryUserUpdateDTO);
         CategoryUserDTO categoryUserDTO = CategoryUserMapper.toDTO(categoryUserListDTO);
         return new ResponseBuilder(
                 "User category updated successfully!",
@@ -110,8 +120,10 @@ public class CategoryUserController {
             summary = "Excluir uma categoria de usuário",
             description = "Exclui uma categoria de usuário pelo ID"
     )
-    public ResponseEntity<Map<String, Object>> delete(@PathVariable(name = "id") Long id) {
-        this.categoryUserService.delete(id);
+    public ResponseEntity<Map<String, Object>> delete(
+            @Pattern(regexp = Regex.VALID_REGEX_TO_UUID, message = "The ID must be a valid UUID")
+            @PathVariable(name = "id") String id) {
+        this.categoryUserService.delete(UUID.fromString(id));
         return new ResponseBuilder(
                 "User category deleted successfully!",
                 HttpStatus.OK

@@ -16,6 +16,8 @@ import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabas
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 
+import java.util.UUID;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
@@ -72,7 +74,7 @@ class CategoryUserServiceIT {
     @DisplayName("Não deve recuperar uma categoria de usuário com ID inexistente")
     void showCategoryUserNotFound() {
         assertThrows(CategoryUserNotFoundException.class, () -> {
-            categoryUserService.show(999L);
+            categoryUserService.show(UUID.randomUUID());
         });
     }
 
@@ -92,7 +94,7 @@ class CategoryUserServiceIT {
 
         CategoryUserUpdateDTO dto = new CategoryUserUpdateDTO("common");
         assertThrows(CategoryUserNotFoundException.class, () -> {
-            categoryUserService.update(999L, dto);
+            categoryUserService.update(UUID.randomUUID(), dto);
         });
     }
 
@@ -110,7 +112,7 @@ class CategoryUserServiceIT {
     @DisplayName("Não deve excluir uma categoria de usuário com ID inexistente")
     void deleteCategoryUserNotFound() {
         assertThrows(CategoryUserNotFoundException.class, () -> {
-            categoryUserService.delete(999L); // ID inexistente
+            categoryUserService.delete(UUID.randomUUID()); // ID inexistente
         });
     }
 }

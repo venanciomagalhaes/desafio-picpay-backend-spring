@@ -8,10 +8,11 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 @Repository
-public interface TransactionRepository extends JpaRepository<Transaction, Long> {
+public interface TransactionRepository extends JpaRepository<Transaction, UUID> {
 
     @Query(value = "SELECT * FROM tb_transactions T WHERE T.status = 'pending' AND T.payer_id = :id", nativeQuery = true)
-    List<Transaction> findPendingTransfersWithPayerUser(@Param("id") Long id);
+    List<Transaction> findPendingTransfersWithPayerUser(@Param("id") UUID id);
 }

@@ -30,6 +30,7 @@ import org.springframework.transaction.annotation.Transactional;
 import static org.mockito.Mockito.*;
 
 import java.math.BigDecimal;
+import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -99,8 +100,8 @@ class TransferServiceIT {
     void transferSuccessfulTest() {
         TransactionStoreDTO transactionDTO = new TransactionStoreDTO(
                 BigDecimal.valueOf(100),
-                this.payer.getId(),
-                this.payee.getId()
+                this.payer.getId().toString(),
+                this.payee.getId().toString()
         );
 
         Transaction transaction = this.transferService.transfer(transactionDTO);
@@ -117,8 +118,8 @@ class TransferServiceIT {
     void userNotFoundTest() {
         TransactionStoreDTO transactionDTO = new TransactionStoreDTO(
                 BigDecimal.valueOf(100),
-                999L,
-                payee.getId()
+                UUID.randomUUID().toString(),
+                payee.getId().toString()
         );
         assertThrows(UserNotFoundException.class, () -> {
             transferService.transfer(transactionDTO);
@@ -130,8 +131,8 @@ class TransferServiceIT {
     void insufficientBalanceTest() {
         TransactionStoreDTO transactionDTO = new TransactionStoreDTO(
                 BigDecimal.valueOf(1500),
-                payer.getId(),
-                payee.getId()
+                payer.getId().toString(),
+                payee.getId().toString()
         );
         assertThrows(InsufficientBalanceException.class, () -> {
             transferService.transfer(transactionDTO);
@@ -143,8 +144,8 @@ class TransferServiceIT {
     void transferToSelfTest() {
         TransactionStoreDTO transactionDTO = new TransactionStoreDTO(
                 BigDecimal.valueOf(100),
-                payer.getId(),
-                payer.getId()
+                payer.getId().toString(),
+                payer.getId().toString()
         );
 
         assertThrows(CannotTransferMoneyToThemselvesException.class, () -> {
@@ -157,8 +158,8 @@ class TransferServiceIT {
     void invalidTransferValueTest() {
         TransactionStoreDTO transactionDTO = new TransactionStoreDTO(
                 BigDecimal.valueOf(0),
-                payer.getId(),
-                payee.getId()
+                payer.getId().toString(),
+                payee.getId().toString()
         );
 
         assertThrows(TransferValueMustBeGreaterThanZeroException.class, () -> {
@@ -183,8 +184,8 @@ class TransferServiceIT {
 
         TransactionStoreDTO transactionDTO = new TransactionStoreDTO(
                 BigDecimal.valueOf(100),
-                payer.getId(),
-                payee.getId()
+                payer.getId().toString(),
+                payee.getId().toString()
         );
 
         assertThrows(PayerHasPendingTransfers.class, () -> {
@@ -205,8 +206,8 @@ class TransferServiceIT {
 
         TransactionStoreDTO transactionDTO = new TransactionStoreDTO(
                 BigDecimal.valueOf(100),
-                payer.getId(),
-                payee.getId()
+                payer.getId().toString(),
+                payee.getId().toString()
         );
 
         assertThrows(UnauthorizedTransferException.class, () -> {
@@ -235,8 +236,8 @@ class TransferServiceIT {
 
         TransactionStoreDTO transactionDTO = new TransactionStoreDTO(
                 BigDecimal.valueOf(100),
-                payer.getId(),
-                payee.getId()
+                payer.getId().toString(),
+                payee.getId().toString()
         );
 
         assertThrows(EmailNotificationFailedException.class, () -> {

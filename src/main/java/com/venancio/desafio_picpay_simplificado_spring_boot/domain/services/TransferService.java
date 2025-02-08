@@ -22,6 +22,7 @@ import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.UUID;
 
 /**
  * Serviço responsável pela lógica de transferência de valores entre usuários.
@@ -68,12 +69,12 @@ public class TransferService {
      */
     @Transactional
     public Transaction transfer(@Valid TransactionStoreDTO transactionStoreDTO) {
-        User payer = this.userRepository.findById(transactionStoreDTO.getPayer()).orElse(null);
-        this.throwExceptionIfUserNotExists(payer, transactionStoreDTO.getPayer());
-        this.throwExceptionIfPayerIsNotCommon(payer, transactionStoreDTO.getPayer());
+        User payer = this.userRepository.findById(UUID.fromString(transactionStoreDTO.getPayer())).orElse(null);
+        this.throwExceptionIfUserNotExists(payer, UUID.fromString(transactionStoreDTO.getPayer()));
+        this.throwExceptionIfPayerIsNotCommon(payer, UUID.fromString(transactionStoreDTO.getPayer()));
 
-        User payee = this.userRepository.findById(transactionStoreDTO.getPayee()).orElse(null);
-        this.throwExceptionIfUserNotExists(payee, transactionStoreDTO.getPayee());
+        User payee = this.userRepository.findById(UUID.fromString(transactionStoreDTO.getPayee())).orElse(null);
+        this.throwExceptionIfUserNotExists(payee, UUID.fromString(transactionStoreDTO.getPayee()));
         this.throwExceptionIfPayerIsPayee(payer, payee);
 
         this.throwExceptionIfPayerHasPendingTransfers(payer);
@@ -151,7 +152,7 @@ public class TransferService {
      * @param id O ID do usuário.
      * @throws UserNotFoundException Se o usuário não for encontrado.
      */
-    private void throwExceptionIfUserNotExists(User user, Long id) {
+    private void throwExceptionIfUserNotExists(User user, UUID id) {
         if (user == null) {
             UserNotFoundException.throwDefaultMessage(id);
         }
@@ -164,7 +165,7 @@ public class TransferService {
      * @param id O ID do usuário.
      * @throws UserCannotMakeTransfers Se o pagador não puder realizar transferências.
      */
-    private void throwExceptionIfPayerIsNotCommon(User user, Long id) {
+    private void throwExceptionIfPayerIsNotCommon(User user, UUID id) {
         if (user != null) {
             String categoryNameUser = user.getCategory().getName().name();
             String commonUserCategory = CategoryUserNameEnum.common.name();

@@ -45,7 +45,8 @@ class TransactionRepositoryIT {
                 CategoryUserNameEnum.common
         );
 
-        categoryStore = this.categoryUserRepository.saveAndFlush(categoryStore);
+        categoryStore = this.categoryUserRepository.save(categoryStore);
+        categoryStore = this.categoryUserRepository.save(categoryCommon);
 
         User userMarvel = new User(
                 "Marvel",
@@ -63,8 +64,8 @@ class TransactionRepositoryIT {
                 categoryCommon
         );
 
-        userMarvel = this.userRepository.saveAndFlush(userMarvel);
-        userPeter = this.userRepository.saveAndFlush(userPeter);
+        userMarvel = this.userRepository.save(userMarvel);
+        userPeter = this.userRepository.save(userPeter);
 
         Transaction pendingTransacition = new Transaction(
                 null,
@@ -86,7 +87,7 @@ class TransactionRepositoryIT {
                 null
         );
 
-        this.transactionRepository.saveAllAndFlush(List.of(
+        this.transactionRepository.saveAll(List.of(
                 finalizedTransacition,
                 pendingTransacition
         ));

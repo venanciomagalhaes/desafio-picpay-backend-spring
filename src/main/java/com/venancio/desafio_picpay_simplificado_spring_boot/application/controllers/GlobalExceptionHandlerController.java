@@ -128,7 +128,7 @@ public class GlobalExceptionHandlerController {
     @ExceptionHandler(Exception.class)
     public ResponseEntity<Map<String, Object>> handleGenericException(Exception ex) {
         return new ResponseBuilder(
-                "Internal Server error",
+                ex.toString(),
                 HttpStatus.INTERNAL_SERVER_ERROR
         ).build();
     }

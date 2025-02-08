@@ -16,6 +16,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.UUID;
 
 /**
  * Serviço responsável pela lógica de negócios relacionada à entidade {@link CategoryUser}.
@@ -83,13 +84,13 @@ public class CategoryUserService {
      * @return A categoria de usuário encontrada.
      * @throws CategoryUserNotFoundException Se a categoria de usuário não for encontrada.
      */
-    public CategoryUser show(Long id) {
+    public CategoryUser show(UUID id) {
         CategoryUser categoryUser = this.categoryUserRepository.findById(id).orElse(null);
         this.throwExceptionIfCategoryUserNotFound(id, categoryUser);
         return categoryUser;
     }
 
-    private void throwExceptionIfCategoryUserNotFound(Long id, CategoryUser categoryUser) {
+    private void throwExceptionIfCategoryUserNotFound(UUID id, CategoryUser categoryUser) {
         if (categoryUser == null){
             CategoryUserNotFoundException.throwDefaultMessage(id);
         }
@@ -104,7 +105,7 @@ public class CategoryUserService {
      * @throws CategoryUserNotFoundException Se a categoria de usuário não for encontrada.
      */
     @Transactional
-    public CategoryUser update(Long id, @Valid CategoryUserUpdateDTO categoryUserUpdateDTO) {
+    public CategoryUser update(UUID id, @Valid CategoryUserUpdateDTO categoryUserUpdateDTO) {
         CategoryUser categoryUser = this.categoryUserRepository.findById(id).orElse(null);
         if (categoryUser == null){
             CategoryUserNotFoundException.throwDefaultMessage(id);
@@ -123,7 +124,7 @@ public class CategoryUserService {
      * @throws CategoryUserNotFoundException Se a categoria de usuário não for encontrada.
      */
     @Transactional
-    public void delete(Long id) {
+    public void delete(UUID id) {
         CategoryUser categoryUser = this.categoryUserRepository.findById(id).orElse(null);
         this.throwExceptionIfCategoryUserNotFound(id, categoryUser);
         if(categoryUser != null){

@@ -7,6 +7,7 @@ import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import org.hibernate.validator.constraints.Length;
+import org.hibernate.validator.constraints.UUID;
 
 public record UserStoreDTO(
         @NotEmpty(message = "The name field is required")
@@ -25,7 +26,8 @@ public record UserStoreDTO(
         String password,
         @NotNull(message = "The category_id field is required")
         @UserCategoryExist()
-        Long category_id
+        @UUID
+        String category_id
 ) {
 
 }

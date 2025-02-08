@@ -7,6 +7,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 class TransactionTest {
 
@@ -19,7 +20,7 @@ class TransactionTest {
         payer = new User();
         payee = new User();
         transaction = new Transaction(
-                1L,
+                UUID.randomUUID(),
                 payer,
                 payee,
                 BigDecimal.valueOf(100.0),
@@ -50,10 +51,11 @@ class TransactionTest {
 
     @Test
     void testSetAndGetMethods() {
-        transaction.setId(2L);
+        UUID random = UUID.randomUUID();
+        transaction.setId(random);
         transaction.setValue(BigDecimal.valueOf(200.0));
         transaction.setStatus(TransferStatus.finalized);
-        assertEquals(2L, transaction.getId());
+        assertEquals(random, transaction.getId());
         assertEquals(transaction.getPayee(), payee);
         assertEquals(transaction.getPayer(), payer);
         assertEquals(BigDecimal.valueOf(200.0), transaction.getValue());

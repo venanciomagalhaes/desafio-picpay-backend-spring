@@ -10,8 +10,10 @@ import jakarta.validation.ConstraintValidatorContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 
+import java.util.UUID;
 
-public class CanSendTransferValidator implements ConstraintValidator<CanSendTransfer, Long> {
+
+public class CanSendTransferValidator implements ConstraintValidator<CanSendTransfer, String> {
 
     private final UserRepository userRepository;
 
@@ -21,11 +23,11 @@ public class CanSendTransferValidator implements ConstraintValidator<CanSendTran
     }
 
     @Override
-    public boolean isValid(Long value, ConstraintValidatorContext context) {
+    public boolean isValid(String value, ConstraintValidatorContext context) {
         try {
-            User user = this.userRepository.findById(value).orElse(null);
+            User user = this.userRepository.findById(UUID.fromString(value)).orElse(null);
             if (user == null){
-                UserNotFoundException.throwDefaultMessage(value);
+                UserNotFoundException.throwDefaultMessage(UUID.fromString(value));
             }
             CategoryUser categoryUser = user.getCategory();
             return CategoryUserNameEnum.common.name().equals(categoryUser.getName().name());

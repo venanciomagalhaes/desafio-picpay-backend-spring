@@ -4,6 +4,7 @@ import com.venancio.desafio_picpay_simplificado_spring_boot.application.validati
 import com.venancio.desafio_picpay_simplificado_spring_boot.application.validations.user_category.user_category_exist.UserCategoryExist;
 import jakarta.validation.constraints.Email;
 import org.hibernate.validator.constraints.Length;
+import org.hibernate.validator.constraints.UUID;
 
 public record UserUpdateDTO(
         @Length(max = 255, min = 5, message = "The name must be between 5 and 255 characters")
@@ -14,7 +15,8 @@ public record UserUpdateDTO(
         @StrongPassword
         String password,
         @UserCategoryExist()
-        Long category_id
+        @UUID
+        String category_id
 ) {
 
 }
