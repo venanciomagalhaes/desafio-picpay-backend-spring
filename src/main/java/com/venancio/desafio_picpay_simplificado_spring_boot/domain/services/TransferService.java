@@ -1,24 +1,20 @@
 package com.venancio.desafio_picpay_simplificado_spring_boot.domain.services;
 
-import com.venancio.desafio_picpay_simplificado_spring_boot.application.dtos.transaction.AuthorizationDTO;
 import com.venancio.desafio_picpay_simplificado_spring_boot.application.dtos.transaction.TransactionStoreDTO;
 import com.venancio.desafio_picpay_simplificado_spring_boot.application.mappers.TransactionMapper;
-import com.venancio.desafio_picpay_simplificado_spring_boot.application.utils.http_client.HttpClient;
 import com.venancio.desafio_picpay_simplificado_spring_boot.application.utils.http_client.UtilDeviToolsClient;
-import com.venancio.desafio_picpay_simplificado_spring_boot.application.utils.notifications.EmailNotification;
 import com.venancio.desafio_picpay_simplificado_spring_boot.domain.entities.Transaction;
 import com.venancio.desafio_picpay_simplificado_spring_boot.domain.entities.User;
 import com.venancio.desafio_picpay_simplificado_spring_boot.domain.enums.CategoryUserNameEnum;
 import com.venancio.desafio_picpay_simplificado_spring_boot.domain.enums.TransferStatus;
-import com.venancio.desafio_picpay_simplificado_spring_boot.domain.exceptions.email.EmailNotificationFailedException;
 import com.venancio.desafio_picpay_simplificado_spring_boot.domain.exceptions.transfer.*;
 import com.venancio.desafio_picpay_simplificado_spring_boot.domain.exceptions.user.UserNotFoundException;
 import com.venancio.desafio_picpay_simplificado_spring_boot.domain.repositories.TransactionRepository;
 import com.venancio.desafio_picpay_simplificado_spring_boot.domain.repositories.UserRepository;
-import org.springframework.transaction.annotation.Transactional;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -33,25 +29,20 @@ import java.util.UUID;
 @Service
 public class TransferService {
 
-    private static final int MAX_ATTEMPTS = 5;
-    private static final int BACKOFF_ONE_TENTH_SECOND = 100;
 
     private final UserRepository userRepository;
     private final TransactionRepository transactionRepository;
-    private final HttpClient utilDeviToolsClient;
+    private final AuthorizationService authorizationService;
+    private final NotificationService notificationService;
 
-    /**
-     * Construtor do serviço de transferência.
-     *
-     * @param userRepository Repositório de usuários.
-     * @param transactionRepository Repositório de transações.
-     * @param utilDeviToolsClient Cliente HTTP para chamadas externas.
-     */
+
+
     @Autowired
-    public TransferService(UserRepository userRepository, TransactionRepository transactionRepository, UtilDeviToolsClient utilDeviToolsClient) {
+    public TransferService(UserRepository userRepository, TransactionRepository transactionRepository, AuthorizationService authorizationService, NotificationService notificationService) {
         this.userRepository = userRepository;
         this.transactionRepository = transactionRepository;
-        this.utilDeviToolsClient = utilDeviToolsClient;
+        this.authorizationService = authorizationService;
+        this.notificationService = notificationService;
     }
 
     /**
@@ -83,7 +74,7 @@ public class TransferService {
         BigDecimal valueOfTransfer = transactionStoreDTO.getValue();
         this.throwExceptionIfTransferValueIsInvalid(valueOfTransfer);
         this.throwExceptionIfInsufficientBalancePayer(balancePayer, valueOfTransfer);
-        this.verifyTransferAuthorization();
+        this.authorizationService.verifyTransferAuthorization();
 
         Transaction transaction = TransactionMapper.toEntityStore(transactionStoreDTO, payer, payee, TransferStatus.pending);
         transaction = this.transactionRepository.saveAndFlush(transaction);
@@ -99,51 +90,12 @@ public class TransferService {
 
         transaction.setStatus(TransferStatus.finalized);
         this.transactionRepository.save(transaction);
-        this.sendNotificationsToPayerAndPayee(transactionStoreDTO, payee, payer);
+        this.notificationService.sendNotificationsToPayerAndPayee(transactionStoreDTO, payee, payer);
 
         return transaction;
     }
 
-    /**
-     * Envia notificações de email para o pagador e o recebedor sobre o status da transação.
-     *
-     * @param transactionStoreDTO DTO da transação.
-     * @param payee Usuário recebedor da transação.
-     * @param payer Usuário pagador da transação.
-     * @throws EmailNotificationFailedException Se não for possível enviar as notificações.
-     */
-    private void sendNotificationsToPayerAndPayee(TransactionStoreDTO transactionStoreDTO, User payee, User payer)  {
-        boolean isSend = false;
-        int attempt = 0;
-        while (attempt < MAX_ATTEMPTS) {
-            try {
-                this.utilDeviToolsClient.post("/v1/notify", null, null);
-                isSend = true;
-                break;
-            } catch (Exception ignored) {
-            } finally {
-                attempt++;
-                this.addDelay(attempt);
-            }
-        }
-        if (!isSend){
-            EmailNotificationFailedException.throwDefaultMessage();
-        }
-    }
 
-    /**
-     * Adiciona um atraso entre as tentativas de envio de notificação.
-     *
-     * @param attempt O número da tentativa atual.
-     */
-    private void addDelay(int attempt) {
-        if (attempt < MAX_ATTEMPTS) {
-            try {
-                Thread.sleep(TransferService.BACKOFF_ONE_TENTH_SECOND);
-            } catch (InterruptedException ignored) {
-            }
-        }
-    }
 
     /**
      * Lança uma exceção caso o usuário não seja encontrado.
@@ -227,28 +179,6 @@ public class TransferService {
         }
     }
 
-    /**
-     * Verifica se a transferência está autorizada por um sistema externo.
-     *
-     * @throws UnauthorizedTransferException Se a transferência não for autorizada.
-     */
-    private void verifyTransferAuthorization() {
-        AuthorizationDTO authorizationDTO = null;
-        int attempt = 0;
-        while (attempt < MAX_ATTEMPTS) {
-            try {
-                authorizationDTO = this.utilDeviToolsClient.get("/v2/authorize", AuthorizationDTO.class);
-                if (authorizationDTO != null && authorizationDTO.getData().isAuthorized()) {
-                    break;
-                }
-            } catch (RuntimeException ignored) {
-            } finally {
-                attempt++;
-                addDelay(attempt);
-            }
-        }
-        if (authorizationDTO == null || !authorizationDTO.getData().isAuthorized()){
-           UnauthorizedTransferException.throwDefaultMessage();
-        }
-    }
+
+
 }

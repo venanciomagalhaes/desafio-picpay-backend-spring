@@ -198,10 +198,19 @@ class TransferServiceIT {
     void unauthorizedTransferTest() {
         when(utilDeviToolsClientMock.get("/v2/authorize", AuthorizationDTO.class)).thenThrow(new RuntimeException());
 
+        AuthorizationService authorizationService = new AuthorizationService(
+                utilDeviToolsClientMock
+        );
+
+        NotificationService notificationService = new NotificationService(
+                utilDeviToolsClientMock
+        );
+
         TransferService transferService = new TransferService(
                 userRepository,
                 transactionRepository,
-                utilDeviToolsClientMock
+                authorizationService,
+                notificationService
         );
 
         TransactionStoreDTO transactionDTO = new TransactionStoreDTO(
@@ -228,10 +237,19 @@ class TransferServiceIT {
         );
         when(utilDeviToolsClientMock.post("/v1/notify", null, null)).thenThrow(new RuntimeException());
 
+        AuthorizationService authorizationService = new AuthorizationService(
+                utilDeviToolsClientMock
+        );
+
+        NotificationService notificationService = new NotificationService(
+                utilDeviToolsClientMock
+        );
+
         TransferService transferService = new TransferService(
                 userRepository,
                 transactionRepository,
-                utilDeviToolsClientMock
+                authorizationService,
+                notificationService
         );
 
         TransactionStoreDTO transactionDTO = new TransactionStoreDTO(

@@ -49,10 +49,10 @@ public class User implements Serializable {
     @JoinColumn(name = "category_id", nullable = false)
     private CategoryUser category;
 
-    @OneToMany(mappedBy = "payer", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "payer", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private Set<Transaction> payerTransactions = new HashSet<>();
 
-    @OneToMany(mappedBy = "payee", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "payee", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private Set<Transaction> payeeTransactions = new HashSet<>();;
 
     @Column(nullable = false, name = "created_at", updatable = false)
