@@ -8,6 +8,8 @@ import com.venancio.desafio_picpay_simplificado_spring_boot.domain.enums.Categor
 import com.venancio.desafio_picpay_simplificado_spring_boot.domain.exceptions.user.UserNotFoundException;
 import com.venancio.desafio_picpay_simplificado_spring_boot.domain.repositories.CategoryUserRepository;
 import com.venancio.desafio_picpay_simplificado_spring_boot.domain.repositories.UserRepository;
+import org.junit.jupiter.api.AfterEach;
+import org.springframework.test.context.TestPropertySource;
 import org.springframework.transaction.annotation.Transactional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -25,9 +27,9 @@ import java.util.UUID;
 import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
-@Transactional
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 @ActiveProfiles("test")
+@Transactional
 class UserServiceIT {
 
     @Autowired
@@ -40,6 +42,7 @@ class UserServiceIT {
     private CategoryUserRepository categoryUserRepository;
 
     private CategoryUser category;
+
 
     @BeforeEach
     void setUp() {

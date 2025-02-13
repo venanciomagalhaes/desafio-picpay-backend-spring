@@ -1,29 +1,29 @@
 package com.venancio.desafio_picpay_simplificado_spring_boot.domain.services;
 
 import com.venancio.desafio_picpay_simplificado_spring_boot.application.dtos.transaction.AuthorizationDTO;
+import com.venancio.desafio_picpay_simplificado_spring_boot.application.dtos.transaction.TransactionStoreDTO;
+import com.venancio.desafio_picpay_simplificado_spring_boot.application.dtos.user.UserStoreDTO;
 import com.venancio.desafio_picpay_simplificado_spring_boot.application.utils.http_client.UtilDeviToolsClient;
 import com.venancio.desafio_picpay_simplificado_spring_boot.application.utils.notifications.EmailNotification;
 import com.venancio.desafio_picpay_simplificado_spring_boot.domain.entities.CategoryUser;
 import com.venancio.desafio_picpay_simplificado_spring_boot.domain.entities.Transaction;
 import com.venancio.desafio_picpay_simplificado_spring_boot.domain.entities.User;
-import com.venancio.desafio_picpay_simplificado_spring_boot.domain.entities.Wallet;
 import com.venancio.desafio_picpay_simplificado_spring_boot.domain.enums.CategoryUserNameEnum;
 import com.venancio.desafio_picpay_simplificado_spring_boot.domain.enums.TransferStatus;
 import com.venancio.desafio_picpay_simplificado_spring_boot.domain.exceptions.email.EmailNotificationFailedException;
 import com.venancio.desafio_picpay_simplificado_spring_boot.domain.exceptions.transfer.*;
 import com.venancio.desafio_picpay_simplificado_spring_boot.domain.exceptions.user.UserNotFoundException;
 import com.venancio.desafio_picpay_simplificado_spring_boot.domain.repositories.CategoryUserRepository;
-import com.venancio.desafio_picpay_simplificado_spring_boot.domain.repositories.UserRepository;
 import com.venancio.desafio_picpay_simplificado_spring_boot.domain.repositories.TransactionRepository;
-import com.venancio.desafio_picpay_simplificado_spring_boot.application.dtos.transaction.TransactionStoreDTO;
+import com.venancio.desafio_picpay_simplificado_spring_boot.domain.repositories.UserRepository;
 import com.venancio.desafio_picpay_simplificado_spring_boot.domain.repositories.WalletRepository;
 import com.venancio.desafio_picpay_simplificado_spring_boot.domain.services.Transfer.AuthorizationService;
 import com.venancio.desafio_picpay_simplificado_spring_boot.domain.services.Transfer.NotificationService;
 import com.venancio.desafio_picpay_simplificado_spring_boot.domain.services.Transfer.TransferService;
 import com.venancio.desafio_picpay_simplificado_spring_boot.domain.services.Transfer.TransferValidator;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
@@ -31,12 +31,11 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
 
-import static org.mockito.Mockito.*;
-
 import java.math.BigDecimal;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.when;
 
 @SpringBootTest
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
@@ -71,35 +70,39 @@ class TransferServiceIT {
     private User payer;
     private User payee;
 
+    @Autowired
+    private UserService userService;
+
+
     @BeforeEach
     void setUp() {
         // Criação de uma categoria de usuário
         CategoryUser common = new CategoryUser(CategoryUserNameEnum.common);
-        common = categoryUserRepository.saveAndFlush(common);
+        common = categoryUserRepository.save(common);
 
         // Criação dos usuários
-        this.payer = new User("Payer", "12345678901", "payer@domain.com", "password", common);
-        this.payee = new User("Payee", "98765432100", "payee@domain.com", "password", common);
 
-        // Criação das wallets e associação com os usuários
-        Wallet payerWallet = new Wallet(   null,
-                BigDecimal.valueOf(1000),
-                this.payer,
-                null,
-                null);
-        Wallet payeeWallet = new Wallet(   null,
-                BigDecimal.valueOf(500),
-                this.payee,
-                null,
-                null);
+        UserStoreDTO storeDTO = new UserStoreDTO(
+            "Payer",
+            "12345678901",
+            "payer@domain.com",
+            "password",
+            common.getId().toString()
+        );
 
-        // Associa as wallets aos usuários
-        this.payer.setWallet(payerWallet);
-        this.payee.setWallet(payeeWallet);
+        this.payer  = this.userService.store(storeDTO);
 
-        // Salvando os usuários e suas wallets
-        this.payer = userRepository.saveAndFlush(this.payer);
-        this.payee = userRepository.saveAndFlush(this.payee);
+        storeDTO = new UserStoreDTO(
+                "Payee",
+                "98765432100",
+                "payee@domain.com",
+                "password",
+                common.getId().toString()
+        );
+
+
+        this.payee = this.userService.store(storeDTO);
+
     }
 
     @Test
@@ -143,11 +146,13 @@ class TransferServiceIT {
 
         Transaction transaction = transferService.transfer(transactionDTO);
 
+
+
         assertNotNull(transaction);
         assertEquals(TransferStatus.finalized, transaction.getStatus());
         assertEquals(transaction.getValue(), BigDecimal.valueOf(100));
-        assertEquals(payer.getWallet().getBalance(), BigDecimal.valueOf(900));
-        assertEquals(payee.getWallet().getBalance(), BigDecimal.valueOf(600));
+        assertEquals( BigDecimal.valueOf(900), payer.getWallet().getBalance());
+        assertEquals(BigDecimal.valueOf(1100), payee.getWallet().getBalance());
     }
 
     @Test

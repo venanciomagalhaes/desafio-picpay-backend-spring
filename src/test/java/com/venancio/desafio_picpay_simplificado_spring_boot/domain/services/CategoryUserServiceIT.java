@@ -7,6 +7,7 @@ import com.venancio.desafio_picpay_simplificado_spring_boot.domain.enums.Categor
 import com.venancio.desafio_picpay_simplificado_spring_boot.domain.exceptions.category_user.CategoryUserAlreadyExistsException;
 import com.venancio.desafio_picpay_simplificado_spring_boot.domain.exceptions.category_user.CategoryUserNotFoundException;
 import com.venancio.desafio_picpay_simplificado_spring_boot.domain.repositories.CategoryUserRepository;
+import org.springframework.test.context.TestPropertySource;
 import org.springframework.transaction.annotation.Transactional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -22,9 +23,9 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @SpringBootTest
-@Transactional
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 @ActiveProfiles("test")
+@Transactional
 class CategoryUserServiceIT {
 
     @Autowired
@@ -37,10 +38,9 @@ class CategoryUserServiceIT {
 
     @BeforeEach
     void setUp() {
-        categoryUserRepository.deleteAll();
         existingCategory = new CategoryUser();
         existingCategory.setName(CategoryUserNameEnum.common);
-        categoryUserRepository.saveAndFlush(existingCategory);
+        this.categoryUserRepository.save(existingCategory);
     }
 
     @Test

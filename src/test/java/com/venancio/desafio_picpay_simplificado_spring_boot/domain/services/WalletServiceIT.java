@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.TestPropertySource;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
@@ -21,9 +22,9 @@ import java.math.BigDecimal;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @SpringBootTest
-@Transactional
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 @ActiveProfiles("test")
+@Transactional
 class WalletServiceIT {
 
     @Autowired
@@ -40,11 +41,12 @@ class WalletServiceIT {
 
     private User userSonic;
 
+
+
     @BeforeEach
     void setUp() {
-
         CategoryUser common = new CategoryUser(CategoryUserNameEnum.common);
-        common = this.categoryUserRepository.saveAndFlush(common);
+        common = this.categoryUserRepository.save(common);
 
         userSonic = new User(
                 "Sonic",
@@ -53,17 +55,16 @@ class WalletServiceIT {
                 "password",
                 common
         );
-        userSonic = userRepository.saveAndFlush(userSonic);
+        userSonic = userRepository.save(userSonic);
     }
 
     @Test
     @DisplayName("Deve criar e persistir uma carteira com saldo inicial de 1000 para um usuário")
     void createABlankWallet() {
         Wallet createdWallet = walletService.createABlankWallet(userSonic);
-
         Wallet retrievedWallet = walletRepository.findById(createdWallet.getId()).orElseThrow();
 
-        assertEquals(BigDecimal.valueOf(1000), retrievedWallet.getBalance());
+        assertEquals(0, BigDecimal.valueOf(1000.00).compareTo(retrievedWallet.getBalance()));
         assertEquals(userSonic.getId(), retrievedWallet.getUser().getId());
     }
 }

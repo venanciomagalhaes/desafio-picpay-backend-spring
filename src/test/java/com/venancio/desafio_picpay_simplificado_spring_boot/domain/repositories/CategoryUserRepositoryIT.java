@@ -9,6 +9,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.TestPropertySource;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -18,6 +20,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 @DataJpaTest
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 @ActiveProfiles("test")
+@Transactional
 class CategoryUserRepositoryIT {
 
     @Autowired
@@ -26,8 +29,7 @@ class CategoryUserRepositoryIT {
     @BeforeEach
     void setUp() {
         CategoryUser common = new CategoryUser(CategoryUserNameEnum.common);
-        CategoryUser store = new CategoryUser(CategoryUserNameEnum.store);
-        this.categoryUserRepository.saveAllAndFlush(List.of(common, store));
+        this.categoryUserRepository.save(common);
     }
 
     @Test
@@ -41,8 +43,7 @@ class CategoryUserRepositoryIT {
     @Test
     @DisplayName("Deve retornar lista vazia quando não houver categorias com o nome desejado")
     void findByNameIfNonExistsCategories() {
-        this.categoryUserRepository.deleteAll();
-        List<CategoryUser> categoryUsersByName = this.categoryUserRepository.findByName(CategoryUserNameEnum.common);
+        List<CategoryUser> categoryUsersByName = this.categoryUserRepository.findByName(CategoryUserNameEnum.store);
         assertEquals(0, categoryUsersByName.size());
         assertTrue(categoryUsersByName.isEmpty());
     }

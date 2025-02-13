@@ -10,6 +10,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.TestPropertySource;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -19,6 +21,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 @DataJpaTest
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 @ActiveProfiles("test")
+@Transactional
 class UserRepositoryIT {
 
     @Autowired
@@ -32,13 +35,14 @@ class UserRepositoryIT {
 
     @BeforeEach
     void setUp() {
+
         CategoryUser commonCategory = new CategoryUser(CategoryUserNameEnum.common);
-        categoryUserRepository.saveAndFlush(commonCategory);
+        categoryUserRepository.save(commonCategory);
 
         userMickey = new User("Mickey Mouse", "12345678901", "mickey@disney.com", "password", commonCategory);
         userDonald = new User("Donald Duck", "98765432100", "donald@disney.com", "password", commonCategory);
 
-        userRepository.saveAllAndFlush(List.of(userMickey, userDonald));
+        userRepository.saveAll(List.of(userMickey, userDonald));
     }
 
     @Test
